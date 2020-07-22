@@ -1,9 +1,37 @@
 
 import numpy as np
 from typing import List
-from DLplatform.learning.learner import BatchLearner
-from DLplatform.parameters.vectorParameters import VectorParameter
+# from DLplatform.learning.learner import BatchLearner
+from dlplatform.DLplatform.learning.learner import BatchLearner
+from dlplatform.DLplatform.parameters.vectorParameters import VectorParameter
+# from DLplatform.parameters.vectorParameters import VectorParameter
 from sklearn.linear_model import LogisticRegression as LR
+from sklearn.svm import LinearSVC
+
+
+class SupportVectorClassification(BatchLearner):
+    def __init__(self, ):
+        pass
+
+
+    def setModel(self, param : VectorParameter, flags: dict):
+        pass
+
+
+    def train(self, data: List) -> List:
+        pass
+
+
+    def setParameters(self, param : Parameters):
+        pass
+
+
+    def getParameters(self) -> Parameters:
+        pass
+
+    
+
+
 
 class LogisticRegression(BatchLearner):
     def __init__(self, regParam, dim, solver = 'lbfgs', name = "LogisticRegression"):

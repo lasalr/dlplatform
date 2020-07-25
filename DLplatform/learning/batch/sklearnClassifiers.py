@@ -13,8 +13,7 @@ class SupportVectorClassification(BatchLearner):
         self.model = LinearSVC(C=self.regParam, random_state=random_state)
 
     def setModel(self, param: VectorParameter, flags: dict):
-
-        pass
+        self.setParameters(param)
 
     def train(self, data: List) -> List:
 
@@ -29,11 +28,26 @@ class SupportVectorClassification(BatchLearner):
         preds = self.model.predict(X)
         return score, preds
 
-    def setParameters(self, param: Parameters):
+    def setParameters(self, param: VectorParameter):
+
+        if not isinstance(param, VectorParameter):
+            error_text = "The argument param is not of type" + str(VectorParameter) + "it is of type "\
+                         + str(type(param))
+            self.error(error_text)
+            raise ValueError(error_text)
+
+        w = param.get().tolist()
+        b = w[-1]
+        del w[-1]
+        self.model.coef_ = np.array(w)
+        self.model.intercept_ = np.array([b])
 
 
-    def getParameters(self) -> Parameters:
-        pass
+    def getParameters(self) -> VectorParameter:
+        # sklearn get_params() returns a dict, only values are sent as VectorParameter
+        params = VectorParameter(weights=self.model.get_params().values())
+        return params
+
 
 
 class LogisticRegression(BatchLearner):

@@ -5,7 +5,7 @@ from DLplatform.parameters.vectorParameters import VectorParameter
 from sklearn.linear_model import LogisticRegression as LR
 from sklearn.svm import LinearSVC
 
-
+ # Rename to Linear SVC
 class SupportVectorClassification(BatchLearner):
     def __init__(self, regParam, random_state, name='SupportVectorClassification'):
         BatchLearner.__init__(self, name=name)

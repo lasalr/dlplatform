@@ -3,19 +3,44 @@ from typing import List
 from DLplatform.learning.learner import BatchLearner
 from DLplatform.parameters.vectorParameters import VectorParameter
 from sklearn.linear_model import LogisticRegression as LR
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC as SVC
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
 
- # Rename to Linear SVC
-class SupportVectorClassification(BatchLearner):
-    def __init__(self, regParam, random_state, name='SupportVectorClassification'):
+
+# Rename to Linear SVC
+class LinearSVC(BatchLearner):
+
+    def __init__(self, regParam, dim, name="LinearSVC"):
         BatchLearner.__init__(self, name=name)
         self.regParam = regParam
-        self.model = LinearSVC(C=self.regParam, random_state=random_state)
+        self.dim = dim
+        self.model = SVC(C=self.regParam, max_iter=20000, loss='hinge')
+        self.model.coef_ = np.zeros(dim - 1)
+        self.model.intercept_ = np.array([0.0])
 
-    def setModel(self, param: VectorParameter, flags: dict):
-        self.setParameters(param)
+    def setModel(self, param: VectorParameter, setReference: bool):
+        super(LinearSVC, self).setModel(param, setReference)
+
+        # self.info('STARTTIME_setReference: '+str(time.time()))
+        if setReference:
+            self._flattenReferenceParams = param.get()
+        # self.info('ENDTIME_setReference: '+str(time.time()))
 
     def train(self, data: List) -> List:
+        """
+        Training
+
+        Parameters
+        ----------
+        data - training batch
+
+        Returns
+        -------
+        list - first element is loss suffered on this training
+                second element are predictions on the training data
+
+        """
 
         if not isinstance(data, List):
             error_text = "The argument data is not of type" + str(List) + "it is of type " + str(type(data))
@@ -24,14 +49,35 @@ class SupportVectorClassification(BatchLearner):
         X = np.asarray([record[0] for record in data])
         y = np.asarray([record[1] for record in data])
 
-        score = self.model.fit(X=X, y=y, sample_weight=None).score(X=X, y=y)
-        preds = self.model.predict(X)
+        clf = make_pipeline(StandardScaler(), self.model)
+        clf.fit(X, y)
+        # score = self.model.fit(X=X, y=y).score(X=X, y=y)
+        score = clf.fit(X=X, y=y).score(X=X, y=y)
+        preds = clf.predict(X)
+
         return score, preds
 
     def setParameters(self, param: VectorParameter):
+        """
+
+        Replace the current values of the model parameters with the values of "param"
+
+        Parameters
+        ----------
+        param
+
+        Returns
+        -------
+
+        Exception
+        ---------
+        ValueError
+            in case that param is not of type Parameters
+        """
+
 
         if not isinstance(param, VectorParameter):
-            error_text = "The argument param is not of type" + str(VectorParameter) + "it is of type "\
+            error_text = "The argument param is not of type" + str(VectorParameter) + "it is of type " \
                          + str(type(param))
             self.error(error_text)
             raise ValueError(error_text)
@@ -42,15 +88,26 @@ class SupportVectorClassification(BatchLearner):
         self.model.coef_ = np.array(w)
         self.model.intercept_ = np.array([b])
 
-
     def getParameters(self) -> VectorParameter:
-        # sklearn get_params() returns a dict, only values are sent as VectorParameter
-        params = VectorParameter(weights=self.model.get_params().values())
-        return params
+        """
 
+        Takes the current model parameters and hands them to a KerasNNParameters object which is returned
+
+        Returns
+        -------
+        Parameters
+
+        """
+        wb = np.concatenate((self.model.coef_.flatten(), self.model.intercept_))
+
+        if isinstance(self.model.intercept_,
+                      List):  # in principle, the intercept can be a lit. But this may break at other points, then.
+            wb = np.array(self.model.coef_[0].tolist() + self.model.intercept_.tolist())
+        return VectorParameter(wb)
 
 
 class LogisticRegression(BatchLearner):
+
     def __init__(self, regParam, dim, solver='lbfgs', name="LogisticRegression"):
         BatchLearner.__init__(self, name=name)
         self.regParam = regParam

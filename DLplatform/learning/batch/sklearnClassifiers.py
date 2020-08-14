@@ -15,7 +15,7 @@ class LinearSVC(BatchLearner):
         BatchLearner.__init__(self, name=name)
         self.regParam = regParam
         self.dim = dim
-        self.model = SVC(C=self.regParam, max_iter=20000, loss='hinge')
+        self.model = SVC(C=self.regParam, loss='hinge')
         self.model.coef_ = np.zeros(dim - 1)
         self.model.intercept_ = np.array([0.0])
 

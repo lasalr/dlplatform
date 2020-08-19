@@ -5,6 +5,8 @@ import numpy as np
 import gc
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from DLplatform.parameters.vectorParameters import VectorParameter
+
 
 class RadonPoint(Aggregator):
     """
@@ -47,7 +49,33 @@ class RadonPoint(Aggregator):
         A new parameter object that is the Radon point of params.
 
         """
-        return self.getRadonPointHierarchical(params, params.dim)
+        return VectorParameter(self.getRadonPointHierarchical(self.get_array(params), self.get_dim(params)))
+        # return self.getRadonPointHierarchical(params, self.get_dim(params))
+
+    # TODO change getRadonPoint(), getRadonPointHierarchical(), getRadonPointRec(), getRadonPointIter(),
+    #  getRadonNumber(), floatApproxEqual() to use VectorParameter methods instead of working on np.ndarray
+
+    def get_dim(self, params):
+        """
+        Validates all models have same dimensionality
+        and returns dimensionality
+        """
+        dim = params[0].dim
+        for p in params:
+            if p.dim != dim:
+                raise ValueError("Number of parameters in each distributed model are not equal")
+
+        return dim
+
+    def get_array(self, params: List[Parameters]):
+        """
+        returns params as nd.array
+        """
+        arr = params[0].get()
+        for p in params[1:]:
+            arr = np.vstack((arr, p.get()))
+
+        return arr
 
     def getRadonPoint(self, S):
         alpha = []
@@ -98,6 +126,9 @@ class RadonPoint(Aggregator):
         return r
 
     def getRadonPointHierarchical(self, S, h):
+        """
+        S should be an np array
+        """
         instCount = S.shape[0]
         if instCount == 1:
             return S[0]
@@ -170,7 +201,6 @@ class RadonPoint(Aggregator):
         if abs(x - y) <= self.EPS:
             return True
         return False
-
 
 # if __name__ == "__main__":
 #     # Assume this represents 5 data points with 2 dimensions

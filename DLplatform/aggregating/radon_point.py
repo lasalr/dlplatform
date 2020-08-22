@@ -119,7 +119,7 @@ class RadonPoint(Aggregator):
                 r_minus += alpha[i] * S[i]
         rtest_plus = r * 1. / np.linalg.norm(r)  # normiert
         rtest_minus = r_minus * 1. / np.linalg.norm(r_minus)  # normiert
-        if np.linalg.norm(rtest_plus + rtest_minus) > EPS:
+        if np.linalg.norm(rtest_plus + rtest_minus) > self.EPS:
             pass
             # log("Something went wrong!!! r+ = " + str(r) + " but r- = " + str(-1 * r_minus) + ". They should be the
             # same!")

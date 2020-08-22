@@ -49,10 +49,18 @@ class RadonPoint(Aggregator):
         A new parameter object that is the Radon point of params.
 
         """
-        return VectorParameter(self.getRadonPointHierarchical(self.get_array(params), self.get_dim(params)))
+        print("Running Radon point calculation with:", len(params), "models")
+        counter = 0
+        for m in params:
+            print("model:", counter,"-", m.get())
+            counter += 1
+
+        final_parameters = VectorParameter(self.getRadonPointHierarchical(self.get_array(params), self.get_dim(params)))
+        print("Final parameters:", final_parameters.get())
+        return final_parameters
         # return self.getRadonPointHierarchical(params, self.get_dim(params))
 
-    # TODO change getRadonPoint(), getRadonPointHierarchical(), getRadonPointRec(), getRadonPointIter(),
+    # TODO if required, change getRadonPoint(), getRadonPointHierarchical(), getRadonPointRec(), getRadonPointIter(),
     #  getRadonNumber(), floatApproxEqual() to use VectorParameter methods instead of working on np.ndarray
 
     def get_dim(self, params):

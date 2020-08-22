@@ -86,7 +86,7 @@ class RadonPoint(Aggregator):
             A = np.vstack((A, z))
             b = np.zeros(S.shape[0])
             b[-1] = 1.0
-            alpha = np.linalg.lstsq(A, b)[0]
+            alpha = np.linalg.lstsq(A, b, rcond=None)[0]
         else:
             # log(S)
             A = S[:-1]

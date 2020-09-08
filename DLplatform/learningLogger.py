@@ -2,6 +2,7 @@ import os
 import time, pickle
 from DLplatform.parameters import Parameters
 from typing import List
+from collections.abc import Iterable
 import numpy as np
 
 class LearningLogger():
@@ -69,8 +70,11 @@ class LearningLogger():
                     output.write('%.3f\t%s\t%s\n' % (time.time(), str(predictions[i]), str(labels[i])))
                 elif isinstance(labels[i], float) and isinstance(predictions[i], float):
                     output.write('%.3f\t%s\t%s\n' % (time.time(), str(predictions[i]), str(labels[i])))
-                elif isinstance(labels[i], int) and not isinstance(predictions[i], int):
-                    output.write('%.3f\t%s\t%s\n' % (time.time(), ','.join(map(str, predictions[i])), str(labels[i])))
+                elif isinstance(labels[i], int) and not isinstance(predictions[i], int) and isinstance(predictions[i], Iterable):
+                    output.write('%.3f\t%s\t%s\n' % (time.time(), ','.join(list(map(str, predictions[i]))), str(labels[i])))
+                elif isinstance(labels[i], int) and not isinstance(predictions[i], int) and not isinstance(predictions[i], Iterable):
+                    print(isinstance(predictions[i], Iterable))
+                    output.write('%.3f\t%s\t%s\n' % (time.time(), ',' + str(predictions[i]), str(labels[i])))
                 else:
                     output.write('%.3f\t%s\t%s\n' % (time.time(),
                         ','.join(map(str, predictions[i])), ','.join(map(str, labels[i]))))

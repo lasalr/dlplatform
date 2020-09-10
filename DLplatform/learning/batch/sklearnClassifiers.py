@@ -8,7 +8,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 
 
-# Rename to Linear SVC
 class LinearSVC(BatchLearner):
 
     def __init__(self, regParam, dim, name="LinearSVC"):

@@ -73,7 +73,6 @@ class LearningLogger():
                 elif isinstance(labels[i], int) and not isinstance(predictions[i], int) and isinstance(predictions[i], Iterable):
                     output.write('%.3f\t%s\t%s\n' % (time.time(), ','.join(list(map(str, predictions[i]))), str(labels[i])))
                 elif isinstance(labels[i], int) and not isinstance(predictions[i], int) and not isinstance(predictions[i], Iterable):
-                    print(isinstance(predictions[i], Iterable))
                     output.write('%.3f\t%s\t%s\n' % (time.time(), ',' + str(predictions[i]), str(labels[i])))
                 else:
                     output.write('%.3f\t%s\t%s\n' % (time.time(),

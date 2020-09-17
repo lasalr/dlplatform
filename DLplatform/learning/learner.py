@@ -84,6 +84,8 @@ class Learner(baseClass):
 
         self.info("Stopping criterion was met, sending suicide note to coordinator")
         self._communicator.sendDeregistration(self._identifier, self.getParameters())
+        # TODO is this the best way? Check comments on worker.py.
+        #  Can we have a flag stopExec <--- Try this out
         sys.exit()
         
     def setModel(self, param : Parameters, flags: dict):

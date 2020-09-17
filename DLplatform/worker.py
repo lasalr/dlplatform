@@ -357,6 +357,8 @@ class Worker(baseClass):
         # only now we should request for initial model - or we will not be able to receive the answer
         self._learner.requestInitialModel()
 
+        # TODO check what happens in this loop once sys.exit() is run in leaner.py.
+        #  Does the whole loop end and processes all die?
         while True:
             self.checkInterProcessCommunication()
             if len(self._dataBuffer) > 0:

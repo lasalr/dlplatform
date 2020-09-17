@@ -17,6 +17,7 @@ class IntervalDataScheduler(DataScheduler):
         -------
 
         '''
+        # TODO Log this ("Running", __name__) or keep track of data sample using a new variables
         DataScheduler.generateSamples(self)
 
         while True:

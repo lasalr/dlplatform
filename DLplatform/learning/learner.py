@@ -7,25 +7,26 @@ from typing import List
 import time
 import sys
 
+
 class Learner(baseClass):
     '''
     Abstract class defining the structure of a IncrementalLearner. This includes batch and online learners.
 
     '''
     __metaclass__ = ABCMeta
-    
-    def __init__(self, name = "IncrementalLearner", identifier = ""):
+
+    def __init__(self, name="IncrementalLearner", identifier=""):
         '''
         Initialize all the parameters with initial values and base class with name IncrementalLearner
         '''
-        
-        baseClass.__init__(self, name = name)
-        self._identifier                = identifier
-        self._isTraining                = False
-        self._learningLogger            = None
-        self._communicator              = None
-        self._synchronizer              = None
-        
+
+        baseClass.__init__(self, name=name)
+        self._identifier = identifier
+        self._isTraining = False
+        self._learningLogger = None
+        self._communicator = None
+        self._synchronizer = None
+
     def setIdentifier(self, identifier):
         '''
         Setter for identifier
@@ -40,7 +41,7 @@ class Learner(baseClass):
 
         '''
         self._identifier = identifier
-        
+
     def setCommunicator(self, com: Communicator):
         '''
         Setter for communicator of the learner
@@ -61,7 +62,7 @@ class Learner(baseClass):
             raise ValueError(error_text)
 
         self._communicator = com
-        
+
     def setLearningLogger(self, logger):
         '''
         Setter for Learning Logger
@@ -76,7 +77,7 @@ class Learner(baseClass):
 
         '''
         self._learningLogger = logger
-        
+
     def stopExecution(self):
         if self._communicator is None:
             self.error("No communicator is set")
@@ -87,10 +88,10 @@ class Learner(baseClass):
         # TODO is this the best way? Check comments on worker.py.
         #  Can we have a flag stopExec <--- Try this out
         sys.exit()
-        
-    def setModel(self, param : Parameters, flags: dict):
+
+    def setModel(self, param: Parameters, flags: dict):
         '''
-        Function for updating the learner parameters either when registred or when 
+        Function for updating the learner parameters either when registered or when
         balancing was performed and coordinator returned a new averaged model
         In case when full synchronization was performed the reference model
         is also set.
@@ -109,7 +110,7 @@ class Learner(baseClass):
         ValueError
             in case that param is not of type Parameters
         '''
-        #self.info('STARTTIME_setModel: '+str(time.time()))
+        # self.info('STARTTIME_setModel: '+str(time.time()))
         if not isinstance(param, Parameters):
             error_text = "The argument param is not of type" + str(Parameters) + "it is of type " + str(type(param))
             self.error(error_text)
@@ -121,8 +122,8 @@ class Learner(baseClass):
         self._waitingForAModel = False
         if "setReference" in flags and flags["setReference"] == True:
             self._referenceModel = param
-        #self.info('ENDTIME_setModel: '+str(time.time()))
-    
+        # self.info('ENDTIME_setModel: '+str(time.time()))
+
     def answerParameterRequest(self):
         '''
         Function called when balancing request from coordinator is received
@@ -141,7 +142,7 @@ class Learner(baseClass):
             in case communicator is not set
         '''
 
-        #self.info('STARTTIME_answerBalancingRequest: '+str(time.time()))
+        # self.info('STARTTIME_answerBalancingRequest: '+str(time.time()))
         if self._communicator is None:
             self.error("No communicator is set")
             raise AttributeError("No communicator is set")
@@ -153,14 +154,14 @@ class Learner(baseClass):
         if not self._waitingForAModel:
             self._waitingForAModel = True
             self._communicator.sendParameters(self._identifier, self.getParameters())
-        #self.info('ENDTIME_answerBalancingRequest: '+str(time.time()))
-    
+        # self.info('ENDTIME_answerBalancingRequest: '+str(time.time()))
+
     def setStoppingCriterion(self, stoppingCriterion):
         self._stoppingCriterion = stoppingCriterion
 
     def setSynchronizer(self, synchronizer):
         self._synchronizer = synchronizer
-        
+
     def requestInitialModel(self):
         '''
         Wrap function over calling communicator in order to send registration request
@@ -188,7 +189,7 @@ class Learner(baseClass):
         self._communicator.sendRegistration(self._identifier, self.getParameters())
         self._waitingForAModel = True
         self._readyToTrain = False
-        
+
     def reportViolation(self):
         '''
         Wrap function over calling communicator in order to send violation message
@@ -205,7 +206,7 @@ class Learner(baseClass):
 
         '''
 
-        #self.info('STARTTIME_reportViolation: '+str(time.time()))
+        # self.info('STARTTIME_reportViolation: '+str(time.time()))
         if self._communicator is None:
             self.error("No communicator is set")
             raise AttributeError("No communicator is set")
@@ -213,9 +214,9 @@ class Learner(baseClass):
         self.info("Reporting a violation")
         self._communicator.sendViolation(self._identifier, self.getParameters())
         self._waitingForAModel = True
-        #self.info('ENDTIME_reportViolation: '+str(time.time()))
-                    
-    def setParameters(self, param : Parameters):
+        # self.info('ENDTIME_reportViolation: '+str(time.time()))
+
+    def setParameters(self, param: Parameters):
         '''
         Assign new parameters to the learner
         Method called by setModel, implemented in the specific implementation
@@ -242,6 +243,7 @@ class Learner(baseClass):
 
         raise NotImplementedError
 
+
 class IncrementalLearner(Learner):
     '''
     Abstract class defining the structure of a IncrementalLearner that contains the core model and trains it on the incoming data.
@@ -252,7 +254,7 @@ class IncrementalLearner(Learner):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, batchSize : int, syncPeriod : int, name = "IncrementalLearner", identifier = ""):
+    def __init__(self, batchSize: int, syncPeriod: int, name="IncrementalLearner", identifier=""):
         '''
         Initialize all the parameters with initial values and base class with name IncrementalLearner
 
@@ -272,18 +274,15 @@ class IncrementalLearner(Learner):
         '''
 
         Learner.__init__(self, name, identifier)
-        self._batchSize                 = batchSize
-        self._syncPeriod                = syncPeriod
-        
+        self._batchSize = batchSize
+        self._syncPeriod = syncPeriod
 
-        self._referenceModel            = None
+        self._referenceModel = None
 
-        self._waitingForAModel          = False
-        self._trainingBatch             = []
-        self._syncCounter		        = 0
-        self._seenExamples              = 0
-
-
+        self._waitingForAModel = False
+        self._trainingBatch = []
+        self._syncCounter = 0
+        self._seenExamples = 0
 
     def obtainData(self, example: tuple):
         '''
@@ -304,7 +303,7 @@ class IncrementalLearner(Learner):
         None
 
         '''
-        #self.info('STARTTIME_obtainData: '+str(time.time()))
+        # self.info('STARTTIME_obtainData: '+str(time.time()))
         self._trainingBatch.append(example)
         if len(self._trainingBatch) >= self._batchSize:
             currentBatch = self._trainingBatch[:self._batchSize]
@@ -316,9 +315,9 @@ class IncrementalLearner(Learner):
             self._learningLogger.logLearnerLoss(metrics[0])
             # second element of metrics is an array with predictions
             self._learningLogger.logPredictionsLabels(metrics[1], [t[1] for t in currentBatch])
-            #self.info('STARTTIME_checkLocalCondition: '+str(time.time()))
+            # self.info('STARTTIME_checkLocalCondition: '+str(time.time()))
             localEvaluateMsg, localConditionHolds = self.checkLocalConditionHolds()
-            #self.info('ENDTIME_checkLocalCondition: '+str(time.time()))
+            # self.info('ENDTIME_checkLocalCondition: '+str(time.time()))
             self._learningLogger.logViolation(localEvaluateMsg, localConditionHolds)
             if not self._stoppingCriterion is None and self._stoppingCriterion(self._seenExamples, time.time()):
                 self.stopExecution()
@@ -326,8 +325,7 @@ class IncrementalLearner(Learner):
                 self.reportViolation()
             # @TODO where does it make more sense - before or after checking local condition
             self._isTraining = False
-        #self.info('ENDTIME_obtainData: '+str(time.time()))
-
+        # self.info('ENDTIME_obtainData: '+str(time.time()))
 
     def canObtainData(self) -> bool:
         '''
@@ -343,8 +341,6 @@ class IncrementalLearner(Learner):
         '''
         return not self._waitingForAModel and not self._isTraining
 
-
-
     def checkLocalConditionHolds(self) -> (float, bool):
         '''
         Checks local condition for violation
@@ -357,7 +353,6 @@ class IncrementalLearner(Learner):
         '''
 
         raise NotImplementedError
-
 
     def update(self, data: List) -> List:
         '''
@@ -376,17 +371,18 @@ class IncrementalLearner(Learner):
         '''
 
         raise NotImplementedError
-    
+
+
 class BatchLearner(Learner):
-    def __init__(self, name = "BatchLearner", identifier = ""):
+    def __init__(self, name="BatchLearner", identifier=""):
         Learner.__init__(self, name, identifier)
-        self._isInitialized             = True
-        self._parametersRequested       = False
-        self._waitingForAModel          = False
-        self._stop                      = False
-        self._trainingBatch             = []
-        self._seenExamples              = 0
-        
+        self._isInitialized = True
+        self._parametersRequested = False
+        self._waitingForAModel = False
+        self._stop = False
+        self._trainingBatch = []
+        self._seenExamples = 0
+
     def canObtainData(self) -> bool:
         '''
         Obtains the state of the learner
@@ -397,10 +393,11 @@ class BatchLearner(Learner):
         boolean value, defining allowance to accept training data
 
         '''
-        if self._stop and not self._waitingForAModel: #as soon as the stopping criterion is met and the aggregate model is set, the learner is stopped
+        if self._stop and not self._waitingForAModel:  # as soon as the stopping criterion is met and the aggregate
+            # model is set, the learner is stopped
             self.stopExecution()
         return self._isInitialized and not self._isTraining and not self._stop and not self._waitingForAModel
-    
+
     def obtainData(self, example: tuple):
         '''
         Main learner function initiating training and violations checking
@@ -420,24 +417,23 @@ class BatchLearner(Learner):
         None
 
         '''
-        #self.info('STARTTIME_obtainData: '+str(time.time()))
+        # self.info('STARTTIME_obtainData: '+str(time.time()))
         self._trainingBatch.append(example)
         self._seenExamples = len(self._trainingBatch)
         if not self._stoppingCriterion is None and self._stoppingCriterion(self._seenExamples, time.time()):
-            self._parametersRequested = False #the new parameters after training have not yet been sent
+            self._parametersRequested = False  # the new parameters after training have not yet been sent
             self._isTraining = True
             metrics = self.train(self._trainingBatch)
             # first element of metrics is loss value
             self._learningLogger.logLearnerLoss(metrics[0])
             # second element of metrics is an array with predictions
             self._learningLogger.logPredictionsLabels(metrics[1], [t[1] for t in self._trainingBatch])
-            #batch learners report a violation whenever they finished training. 
-            #The model is send once, aggregated and redistributed, then the learner stops.
+            # batch learners report a violation whenever they finished training.
+            # The model is send once, aggregated and redistributed, then the learner stops.
             self.reportViolation()
             self._stop = True
             self._isTraining = False
-            
-            
+
     def train(self, data: List) -> List:
         '''
         Training
@@ -454,8 +450,8 @@ class BatchLearner(Learner):
 
         '''
 
-        raise NotImplementedError    
-        
+        raise NotImplementedError
+
     def answerParameterRequest(self):
         '''
         This function extends the super class "Learner"'s answerParameterRequest to include a stopping condition. 
@@ -466,4 +462,3 @@ class BatchLearner(Learner):
         self._parametersRequested = True
         if self._stop and not self._waitingForAModel:
             self.stopExecution()
-

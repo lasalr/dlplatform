@@ -52,10 +52,11 @@ class RadonPoint(Aggregator):
         print("Running Radon point calculation with:", len(params), "models")
         counter = 0
         for m in params:
-            print("model:", counter,"-", m.get())
+            print("model:", counter, "-", m.get())
             counter += 1
 
-        final_parameters = VectorParameter(self.getRadonPointHierarchical(self.get_array(params), self.get_dim(params)))
+        final_parameters = VectorParameter(
+            self.getRadonPointHierarchical(S=self.get_array(params), h=self.get_dim(params)))
         print("Final parameters:", final_parameters.get())
         return final_parameters
         # return self.getRadonPointHierarchical(params, self.get_dim(params))
@@ -194,6 +195,7 @@ class RadonPoint(Aggregator):
         return S[0]
 
     def getRadonNumber(self, S):
+        print('S.shape:', S.shape)
         return S.shape[1] + 2  # for Euclidean space R^d the radon number is R = d + 2
 
     def floatApproxEqual(self, x, y):

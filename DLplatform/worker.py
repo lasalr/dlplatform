@@ -395,7 +395,7 @@ class Worker(baseClass):
             trace_start_time = datetime.datetime.now()
         # TODO check what happens in this loop once sys.exit() is run in learner.py.
         #  Does the whole loop end and processes all die?
-        while not self._learner._stop:  # TODO change done
+        while not self._learner._stop:
             if MEM_TRACE:
                 if datetime.datetime.now() - trace_start_time > datetime.timedelta(seconds=10):
                     snapshot = tracemalloc.take_snapshot()
@@ -412,7 +412,7 @@ class Worker(baseClass):
                     self._learner.obtainData(self._dataBuffer[0])
                     del (self._dataBuffer[0])
 
-        self._dataScheduler.terminate()  # TODO change done
+        self._dataScheduler.terminate()
         self._dataScheduler.join()
 
         if MEM_TRACE:
@@ -423,7 +423,7 @@ class Worker(baseClass):
             for stat in top_stats[:10]:
                 print(stat)
 
-        self._communicator.terminate()  # TODO change done
+        self._communicator.terminate()
         self._communicator.join()
 
         if MEM_TRACE:

@@ -26,6 +26,7 @@ class Learner(baseClass):
         self._learningLogger = None
         self._communicator = None
         self._synchronizer = None
+        self._stop = False # TODO flag for change
 
     def setIdentifier(self, identifier):
         '''
@@ -87,7 +88,8 @@ class Learner(baseClass):
         self._communicator.sendDeregistration(self._identifier, self.getParameters())
         # TODO is this the best way? Check comments on worker.py.
         #  Can we have a flag stopExec <--- Try this out
-        sys.exit()
+        self._stop = True
+        # sys.exit()
 
     def setModel(self, param: Parameters, flags: dict):
         '''

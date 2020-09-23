@@ -251,6 +251,10 @@ class Worker(baseClass):
                                                                          self.getIdentifier())
             self.info("Coordinator asks for parameters to balance violation")
             self._learner.answerParameterRequest()
+        if 'exit' in routing_key:
+            body_size = 0
+            self.info("Coordinator stops the execution")
+            self._learner.stopExecution()
 
     def checkInterProcessCommunication(self):
         '''

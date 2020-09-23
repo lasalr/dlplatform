@@ -21,7 +21,7 @@ class Worker(baseClass):
 
     '''
 
-    def __init__(self, identifier : str):
+    def __init__(self, identifier: str):
         '''
 
         Initialize a worker.
@@ -36,23 +36,23 @@ class Worker(baseClass):
             in case that identifier is not a string
         '''
 
-        super().__init__(name = "worker_" + str(identifier))
+        super().__init__(name="worker_" + str(identifier))
 
-        self._learner               = None
-        self._communicator          = None
-        self._dataScheduler         = None
-        self._identifier            = identifier
-        self._dataBuffer            = []
+        self._learner = None
+        self._communicator = None
+        self._dataScheduler = None
+        self._identifier = identifier
+        self._dataBuffer = []
 
         # initializing communication with processes of communicator and dataScheduler
-        self._communicatorMsgQueue  = Queue()
+        self._communicatorMsgQueue = Queue()
         # dataScheduler will only write to the pipe and worker will only read,
         # so duplex is not needed; [0] is for reading, [1] for writing
-        self._dataSchedulerPipe        = Pipe(duplex=False)
+        self._dataSchedulerPipe = Pipe(duplex=False)
         # for retrieval at the worker
-        self._dataSchedulerRetriever  = self._dataSchedulerPipe[0]
+        self._dataSchedulerRetriever = self._dataSchedulerPipe[0]
 
-    def setIdentifier(self, identifier : str):
+    def setIdentifier(self, identifier: str):
         '''
 
         Set identifier of the worker.
@@ -84,9 +84,9 @@ class Worker(baseClass):
         str
         '''
 
-        return  self._identifier
+        return self._identifier
 
-    def setLearner(self, learner : Learner):
+    def setLearner(self, learner: Learner):
         '''
 
         Set learner of the worker and link communicator and worker identifier with it
@@ -123,7 +123,7 @@ class Worker(baseClass):
 
         return self._learner
 
-    def setCommunicator(self, comm : Communicator):
+    def setCommunicator(self, comm: Communicator):
         '''
 
         Set the communicator of the worker.
@@ -161,7 +161,7 @@ class Worker(baseClass):
 
         return self._commuicator
 
-    def setDataScheduler(self, datascheduler : DataScheduler):
+    def setDataScheduler(self, datascheduler: DataScheduler):
         '''
 
         Sets data scheduler of the worker and writes this info to the log file.
@@ -176,8 +176,9 @@ class Worker(baseClass):
             in case that datascheduler is not of type DataScheduler
         '''
 
-        if not isinstance(datascheduler,DataScheduler):
-            error_text = "The attribute datascheduler is of type " + str(type(datascheduler)) + " and not of type" + str(DataScheduler)
+        if not isinstance(datascheduler, DataScheduler):
+            error_text = "The attribute datascheduler is of type " + str(
+                type(datascheduler)) + " and not of type" + str(DataScheduler)
             self.error(error_text)
             raise ValueError(error_text)
 
@@ -212,7 +213,7 @@ class Worker(baseClass):
         '''
         self._dataBuffer.append(data)
 
-    def onCommunicatorMessageReceived(self,  routing_key, exchange, body):
+    def onCommunicatorMessageReceived(self, routing_key, exchange, body):
         '''
         Processes incoming message from communicator, i.e., in federated learning setup sent from coordinator:
         In case a new model arrives, this info is logged and the previous model is replaced by that averaged model.
@@ -237,7 +238,8 @@ class Worker(baseClass):
 
         if 'newModel' in routing_key:
             body_size = sys.getsizeof(body)
-            self._communicator.learningLogger.logSendModelMessage(exchange, routing_key, body_size, 'receive', self.getIdentifier())
+            self._communicator.learningLogger.logSendModelMessage(exchange, routing_key, body_size, 'receive',
+                                                                  self.getIdentifier())
             self.info("The learner received initial setup or averaged model, with or without reference model")
             message = pickle.loads(body)
             param = message['param']
@@ -245,7 +247,8 @@ class Worker(baseClass):
             self._learner.setModel(param, flags)
         if 'request' in routing_key:
             body_size = 0
-            self._communicator.learningLogger.logBalancingRequestMessage(exchange, routing_key,body_size, 'receive', self.getIdentifier())
+            self._communicator.learningLogger.logBalancingRequestMessage(exchange, routing_key, body_size, 'receive',
+                                                                         self.getIdentifier())
             self.info("Coordinator asks for parameters to balance violation")
             self._learner.answerParameterRequest()
 
@@ -305,8 +308,8 @@ class Worker(baseClass):
             self.error("Learner not set!")
             raise AttributeError("Learner not set!")
 
-        self._communicator.setConnection(consumerConnection = self._communicatorMsgQueue)
-        self._dataScheduler.setConnection(workerConnection = self._dataSchedulerPipe[1])
+        self._communicator.setConnection(consumerConnection=self._communicatorMsgQueue)
+        self._dataScheduler.setConnection(workerConnection=self._dataSchedulerPipe[1])
 
     def run(self):
         '''
@@ -351,8 +354,8 @@ class Worker(baseClass):
         self._dataScheduler.daemon = True
 
         # communicator runs in thread to consume the queue of the worker
-        self._communicator.initiate(exchange = self._communicator._exchangeNodes,
-                                    topics = ["#."+self.getIdentifier()+".#", "#."+self.getIdentifier()])
+        self._communicator.initiate(exchange=self._communicator._exchangeNodes,
+                                    topics=["#." + self.getIdentifier() + ".#", "#." + self.getIdentifier()])
         self._communicator.daemon = True
 
         self._setConnectionsToComponents()

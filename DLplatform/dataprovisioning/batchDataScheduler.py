@@ -1,15 +1,11 @@
 import datetime
 import tracemalloc
-
 from DLplatform.dataprovisioning import DataScheduler
-
 import time
 MEM_TRACE = False
-
 class BatchDataScheduler(DataScheduler):
     def __init__(self, name="BatchDataScheduler"):
         DataScheduler.__init__(self, name=name)
-
     def generateSamples(self):
         '''
 
@@ -18,6 +14,10 @@ class BatchDataScheduler(DataScheduler):
         Returns
         -------
 
+
+
+
+
         '''
         if MEM_TRACE:
             tracemalloc.start(100)
@@ -25,20 +25,9 @@ class BatchDataScheduler(DataScheduler):
 
         DataScheduler.generateSamples(self)
 
-        sent_data_length = 0
-        loop_iter = 0
-
-        while True:
-            data = self.getData()
-            self.sendDataUpdate(data)
-            sent_data_length += len(data)
-
-            log_file_path = 'C:/Users/lasal/Documents/resProj/Console Logs/batchsize_logs.txt'
-            log_start_time = datetime.datetime.now()
-            loop_iter += 1
-
             if datetime.datetime.now() - log_start_time > datetime.timedelta(seconds=5):
                 with open(log_file_path, 'a') as output:
+                    trace_start_time = datetime.datetime.now()
                     output.write('Length of data vector at iteration ' + str(loop_iter) + ' : ' + str(sent_data_length)
                                  + '\n')
 
@@ -50,4 +39,15 @@ class BatchDataScheduler(DataScheduler):
                                                            "BatchDataScheduler")
                     for stat in top_stats[:10]:
                         print(stat)
-                    trace_start_time = datetime.datetime.now()
+            data = self.getData()
+            self.sendDataUpdate(data)
+            sent_data_length += len(data)
+
+            log_file_path = 'C:/Users/lasal/Documents/resProj/Console Logs/batchsize_logs.txt'
+            log_start_time = datetime.datetime.now()
+            loop_iter += 1
+
+        sent_data_length = 0
+        loop_iter = 0
+
+        while True:

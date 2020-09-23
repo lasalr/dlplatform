@@ -19,15 +19,15 @@ class Learner(baseClass):
         '''
         Initialize all the parameters with initial values and base class with name IncrementalLearner
         '''
-
-        baseClass.__init__(self, name=name)
-        self._identifier = identifier
-        self._isTraining = False
-        self._learningLogger = None
-        self._communicator = None
-        self._synchronizer = None
-        self._stop = False # TODO flag for change
-
+        
+        baseClass.__init__(self, name = name)
+        self._identifier                = identifier
+        self._isTraining                = False
+        self._learningLogger            = None
+        self._communicator              = None
+        self._synchronizer              = None
+        self._stop                      = False
+        
     def setIdentifier(self, identifier):
         '''
         Setter for identifier
@@ -86,12 +86,9 @@ class Learner(baseClass):
 
         self.info("Stopping criterion was met, sending suicide note to coordinator")
         self._communicator.sendDeregistration(self._identifier, self.getParameters())
-        # TODO is this the best way? Check comments on worker.py.
-        #  Can we have a flag stopExec <--- Try this out
         self._stop = True
-        # sys.exit()
-
-    def setModel(self, param: Parameters, flags: dict):
+        
+    def setModel(self, param : Parameters, flags: dict):
         '''
         Function for updating the learner parameters either when registered or when
         balancing was performed and coordinator returned a new averaged model

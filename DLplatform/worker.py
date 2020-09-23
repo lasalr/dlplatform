@@ -429,6 +429,7 @@ class Worker(baseClass):
 
         self._communicator.terminate()
         self._communicator.join()
+        print('worker ',self._identifier,' shut down.')
 
         if MEM_TRACE:
             snapshot = tracemalloc.take_snapshot()

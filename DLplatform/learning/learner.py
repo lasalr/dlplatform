@@ -378,7 +378,7 @@ class BatchLearner(Learner):
         self._isInitialized = True
         self._parametersRequested = False
         self._waitingForAModel = False
-        self._stop = False
+        self._batchTrainingCompleted = False
         self._trainingBatch = []
         self._seenExamples = 0
 
@@ -392,18 +392,19 @@ class BatchLearner(Learner):
         boolean value, defining allowance to accept training data
 
         '''
-        if self._stop and not self._waitingForAModel:  # as soon as the stopping criterion is met and the aggregate
-            # model is set, the learner is stopped
+        if self._batchTrainingCompleted and not self._waitingForAModel:  # as soon as the stopping criterion is met and the aggregate model is set, the learner is stopped
             self.stopExecution()
-        return self._isInitialized and not self._isTraining and not self._stop and not self._waitingForAModel
+        # TODO the below returns false even after data examples are beyond the stopping criteria
+        #  Check if the coordinator answers to the
+        return self._isInitialized and not self._isTraining and not self._batchTrainingCompleted and not self._waitingForAModel
 
     def obtainData(self, example: tuple):
         '''
         Main learner function initiating training and violations checking
         In case there are not enough examples it is just added up to the current batch
         In case if we have enough training samples in the buffer for the batch training
-        step we start training. Then local condition is checked and in case there is a 
-        violation the message to coordinator is sent. While training and checking 
+        step we start training. Then local condition is checked and in case there is a
+        violation the message to coordinator is sent. While training and checking
         condition is happening the flag isTraining set to True, so the model parameters
         cannot be requested.
 
@@ -430,7 +431,7 @@ class BatchLearner(Learner):
             # batch learners report a violation whenever they finished training.
             # The model is send once, aggregated and redistributed, then the learner stops.
             self.reportViolation()
-            self._stop = True
+            self._batchTrainingCompleted = True
             self._isTraining = False
 
     def train(self, data: List) -> List:
@@ -453,11 +454,14 @@ class BatchLearner(Learner):
 
     def answerParameterRequest(self):
         '''
-        This function extends the super class "Learner"'s answerParameterRequest to include a stopping condition. 
+        This function extends the super class "Learner"'s answerParameterRequest to include a stopping condition.
         If in a BatchLearner a single batch has been processed for training and the parameters have been requested,
         then the execution can be stopped.
         '''
+        # TODO if coordinator does not set model in AggregationAtTheEnd, quick fix should be to remove the check on
+        #  waiting for model below --> Does coordinator send model back??
         Learner.answerParameterRequest(self)
         self._parametersRequested = True
-        if self._stop and not self._waitingForAModel:
+        if self._batchTrainingCompleted and not self._waitingForAModel:
             self.stopExecution()
+

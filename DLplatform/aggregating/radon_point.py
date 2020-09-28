@@ -4,6 +4,7 @@ from typing import List
 import numpy as np
 import gc
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import math
 
 from DLplatform.parameters.vectorParameters import VectorParameter
 
@@ -56,7 +57,9 @@ class RadonPoint(Aggregator):
             counter += 1
 
         final_parameters = VectorParameter(
-            self.getRadonPointHierarchical(S=self.get_array(params), h=self.get_dim(params)))
+            self.getRadonPointHierarchical(S=self.get_array(params),
+                                           h=math.floor(math.log(len(params),
+                                                                 self.getRadonNumber(self.get_array(params))))))
         print("Final parameters:", final_parameters.get())
         return final_parameters
         # return self.getRadonPointHierarchical(params, self.get_dim(params))

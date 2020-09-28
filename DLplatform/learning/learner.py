@@ -19,15 +19,15 @@ class Learner(baseClass):
         '''
         Initialize all the parameters with initial values and base class with name IncrementalLearner
         '''
-        
-        baseClass.__init__(self, name = name)
-        self._identifier                = identifier
-        self._isTraining                = False
-        self._learningLogger            = None
-        self._communicator              = None
-        self._synchronizer              = None
-        self._stop                      = False
-        
+
+        baseClass.__init__(self, name=name)
+        self._identifier = identifier
+        self._isTraining = False
+        self._learningLogger = None
+        self._communicator = None
+        self._synchronizer = None
+        self._stop = False
+
     def setIdentifier(self, identifier):
         '''
         Setter for identifier
@@ -87,10 +87,10 @@ class Learner(baseClass):
         self.info("Stopping criterion was met, sending suicide note to coordinator")
         self._communicator.sendDeregistration(self._identifier, self.getParameters())
         self._stop = True
-        
-    def setModel(self, param : Parameters, flags: dict):
+
+    def setModel(self, param: Parameters, flags: dict):
         '''
-        Function for updating the learner parameters either when registered or when
+        Function for updating the learner parameters either when registred or when
         balancing was performed and coordinator returned a new averaged model
         In case when full synchronization was performed the reference model
         is also set.
@@ -260,7 +260,7 @@ class IncrementalLearner(Learner):
         Parameters
         ----------
         batchSize - defines the training batchSize, i.e. amount of examples needed to perform one update of the parameters
-        syncPeriod - defines the periodicity of local condition checking. For periodic synchronization it means that 
+        syncPeriod - defines the periodicity of local condition checking. For periodic synchronization it means that
             every syncPeriod examples synchronization will be performed. For dynamic synchronization it means that
             every syncPeriod examples local divergence will be checked.
         identifier - can be set from initializer, but generally set from the setter. It is equal to the identifier of the
@@ -288,8 +288,8 @@ class IncrementalLearner(Learner):
         Main learner function initiating training and violations checking
         In case there are not enough examples it is just added up to the current batch
         In case if we have enough training samples in the buffer for the batch training
-        step we start training. Then local condition is checked and in case there is a 
-        violation the message to coordinator is sent. While training and checking 
+        step we start training. Then local condition is checked and in case there is a
+        violation the message to coordinator is sent. While training and checking
         condition is happening the flag isTraining set to True, so the model parameters
         cannot be requested.
 
@@ -330,7 +330,7 @@ class IncrementalLearner(Learner):
         '''
         Obtains the state of the learner
         Requested by the worker before sending the next example for training.
-        Returns False if the parameters should be updated or the model is 
+        Returns False if the parameters should be updated or the model is
         training currently
 
         Returns

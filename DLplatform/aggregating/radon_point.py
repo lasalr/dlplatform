@@ -29,13 +29,6 @@ class RadonPoint(Aggregator):
     def __str__(self):
         return "Radon point"
 
-    # Added to mimic parallel classes (GeometricMedian, Average, etc. Remove if unnecessary)
-    def calculateDivergence(self, param1, param2):
-        if type(param1) is np.ndarray:
-            return np.linalg.norm(param1 - param2) ** 2
-        else:
-            return param1.distance(param2) ** 2
-
     def __call__(self, params: List[Parameters]) -> Parameters:
         """
         This aggregator takes n lists of model parameters and returns the Radon point (in n dimensions) of the model
@@ -198,7 +191,7 @@ class RadonPoint(Aggregator):
         return S[0]
 
     def getRadonNumber(self, S):
-        print('S.shape:', S.shape)
+        print('S.shape:', S.shape)  # e.g. S.shape = [, 19]
         return S.shape[1] + 2  # for Euclidean space R^d the radon number is R = d + 2
 
     def floatApproxEqual(self, x, y):

@@ -411,6 +411,8 @@ class Worker(baseClass):
                     trace_start_time = datetime.datetime.now()
 
             self.checkInterProcessCommunication()
+            print(len(self._dataBuffer))
+            print(self._learner.canObtainData())
             if len(self._dataBuffer) > 0:
                 if self._learner.canObtainData():
                     self._learner.obtainData(self._dataBuffer[0])

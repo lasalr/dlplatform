@@ -419,6 +419,8 @@ class BatchLearner(Learner):
         '''
         # self.info('STARTTIME_obtainData: '+str(time.time()))
         self._trainingBatch.append(example)
+        print(len(self._trainingBatch))
+        print(self._stoppingCriterion(self._seenExamples, time.time()))
         self._seenExamples = len(self._trainingBatch)
         if not self._stoppingCriterion is None and self._stoppingCriterion(self._seenExamples, time.time()):
             self._parametersRequested = False  # the new parameters after training have not yet been sent

@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from DLplatform.dataprovisioning import DataScheduler
 
@@ -44,5 +45,5 @@ class IntervalDataScheduler(DataScheduler):
 
             if datetime.datetime.now() - log_start_time > datetime.timedelta(seconds=5):
                 with open(log_file_path, 'a') as output:
-                    output.write('Length of data vector at iteration ' + str(loop_iter) + ' : ' + str(sent_data_length)
-                                 + '\n')
+                    output.write('Process ID: ' + str(os.getpid()) + ' iteration count: ' + str(loop_iter) +
+                                 'Vector length: ' + str(sent_data_length) + '\n')

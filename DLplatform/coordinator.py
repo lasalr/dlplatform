@@ -365,13 +365,4 @@ class Coordinator(baseClass):
                         print(stat)
                     trace_start_time = datetime.datetime.now()
 
-        # if MEM_TRACE:
-        #     if datetime.datetime.now() - trace_start_time > datetime.timedelta(seconds=10):
-        #         snapshot = tracemalloc.take_snapshot()
-        #         top_stats = snapshot.statistics('lineno')
-        #         print("[ Top 10 ] - run() in Coordinator")
-        #         for stat in top_stats[:10]:
-        #             print(stat)
-        #         trace_start_time = datetime.datetime.now()
-
         self._communicator.join()

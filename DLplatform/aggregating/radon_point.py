@@ -57,9 +57,6 @@ class RadonPoint(Aggregator):
         return final_parameters
         # return self.getRadonPointHierarchical(params, self.get_dim(params))
 
-    # TODO if required, change getRadonPoint(), getRadonPointHierarchical(), getRadonPointRec(), getRadonPointIter(),
-    #  getRadonNumber(), floatApproxEqual() to use VectorParameter methods instead of working on np.ndarray
-
     def get_dim(self, params):
         """
         Validates all models have same dimensionality

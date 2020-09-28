@@ -6,24 +6,20 @@ import time
 
 
 class IntervalDataScheduler(DataScheduler):
-    def __init__(self, interval = 0.004, name = "IntervalDataScheduler"):
-        DataScheduler.__init__(self, name = name)
+    def __init__(self, interval=0.004, name="IntervalDataScheduler"):
+        DataScheduler.__init__(self, name=name)
 
         self._interval = interval
 
     def generateSamples(self):
-        '''
+        """
 
         Processes next data point from training dataset, i.e. appends it to the data buffer of the worker
 
         Returns
         -------
 
-        '''
-        # TODO Log this ("Running", __name__) or keep track of data sample using a new variables
-        #  Findings: The length of the data vector within IntervalDataScheduler keeps growing. But this does not
-        #  create the large memory leak (Although it could be contributing to a smaller one)
-        #  Leak looks like is happening before this method is executed
+        """
 
         DataScheduler.generateSamples(self)
 
@@ -34,7 +30,7 @@ class IntervalDataScheduler(DataScheduler):
             data = self.getData()
             time.sleep(self._interval)
 
-            #if self._onDataUpdateCallBack is None:
+            # if self._onDataUpdateCallBack is None:
             #    self.error("onUpdate call back function was not set")
             #    raise AttributeError("onUpdate call back function was not set")
 

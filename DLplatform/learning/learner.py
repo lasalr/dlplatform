@@ -425,13 +425,18 @@ class BatchLearner(Learner):
         '''
         # self.info('STARTTIME_obtainData: '+str(time.time()))
         self._trainingBatch.append(example)
-        print(len(self._trainingBatch))
-        print(self._stoppingCriterion(self._seenExamples, time.time()))
         self._seenExamples = len(self._trainingBatch)
+        # print('self._stoppingCriterion: =', self._stoppingCriterion)  # Should print 5000
+        # print('self._seenExamples =', self._seenExamples)  # Should print the length of the training batch
+        # print('self._stoppingCriterion(self._seenExamples, time.time()) =', self._stoppingCriterion(self._seenExamples, time.time()))  # Should print True or False
+        if self._stoppingCriterion(self._seenExamples, time.time()):
+            print('Stopping criterion True')
+            # print(len(self._trainingBatch))
         if not self._stoppingCriterion is None and self._stoppingCriterion(self._seenExamples, time.time()):
+            print('Inside code after stopping criterion fulfilled')
             self._parametersRequested = False  # the new parameters after training have not yet been sent
             self._isTraining = True
-            metrics = self.train(self._trainingBatch)
+            metrics = self.train(self._trainingBatch)  # train() should return loss, preds
             # first element of metrics is loss value
             self._learningLogger.logLearnerLoss(metrics[0])
             # second element of metrics is an array with predictions
@@ -470,6 +475,8 @@ class BatchLearner(Learner):
         #  waiting for model below --> Does coordinator send model back??
         Learner.answerParameterRequest(self)
         self._parametersRequested = True
-        if self._batchTrainingCompleted and not self._waitingForAModel:
-            self.stopExecution()
 
+        print('Checking if self._batchTrainingCompleted')
+        if self._batchTrainingCompleted and not self._waitingForAModel:
+        # if self._batchTrainingCompleted:
+            self.stopExecution()

@@ -45,16 +45,17 @@ class LinearSVC(BatchLearner):
             error_text = "The argument data is not of type" + str(List) + "it is of type " + str(type(data))
             self.error(error_text)
             raise ValueError(error_text)
+        print('About to train using LinearSVC')
         X = np.asarray([record[0] for record in data])
         y = np.asarray([record[1] for record in data])
 
         clf = make_pipeline(StandardScaler(), self.model)
         clf.fit(X, y)
-        # score = self.model.fit(X=X, y=y).score(X=X, y=y)
-        score = clf.fit(X=X, y=y).score(X=X, y=y)
+        # loss = self.model.fit(X=X, y=y).loss(X=X, y=y)
+        loss = clf.fit(X=X, y=y).score(X=X, y=y)
         preds = clf.predict(X)
 
-        return score, preds
+        return loss, preds
 
     def setParameters(self, param: VectorParameter):
         """
@@ -146,10 +147,10 @@ class LogisticRegression(BatchLearner):
             raise ValueError(error_text)
         X = np.asarray([record[0] for record in data])
         y = np.asarray([record[1] for record in data])
-        score = self.model.fit(X, y).score(X, y)
+        loss = self.model.fit(X, y).score(X, y)
         preds = self.model.predict(X)
 
-        return score, preds
+        return loss, preds
 
     def setParameters(self, param: VectorParameter):
         '''

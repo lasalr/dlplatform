@@ -331,11 +331,20 @@ class Coordinator(baseClass):
                     param = message['param']
                     self._nodesInViolation.append(nodeId)
                     self._balancingSet[nodeId] = param
+                    print('type(param) =', type(param))
+                    print('param =', param)
                     # @NOTE always deleting the current violation leads to potential extension of a dynamic small
                     # balancing to a full_sync - might be a case that blocking everything, balancing one violation
                     # and then considering the next one is a better idea from the point of view of effectiveness
                     del self._violations[0]
+                # print('type(self._balancingSet) =', type(self._balancingSet))
+                # print('type(self._balancingSet).keys() =', type(self._balancingSet.keys()))
+                # print('self._balancingSet.keys() =', self._balancingSet.keys())
+                # print('type(self._balancingSet).values() =', type(self._balancingSet.values()))
+                # print('self._balancingSet.values() =', self._balancingSet.values())
                 nodes, params, flags = self._synchronizer.evaluate(self._balancingSet, self._activeNodes)
+                print('nodes in coordinator from ._synchronizer.evaluate()', nodes)
+                print('params in coordinator from ._synchronizer.evaluate()', params)
                 # fill balancing set with None for new nodes in balancing set
                 for newNode in nodes:
                     if not newNode in self._balancingSet.keys() and newNode in self._activeNodes:

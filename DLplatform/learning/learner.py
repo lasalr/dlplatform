@@ -90,7 +90,7 @@ class Learner(baseClass):
 
     def setModel(self, param: Parameters, flags: dict):
         '''
-        Function for updating the learner parameters either when registred or when
+        Function for updating the learner parameters either when registered or when
         balancing was performed and coordinator returned a new averaged model
         In case when full synchronization was performed the reference model
         is also set.
@@ -119,6 +119,7 @@ class Learner(baseClass):
         self.setParameters(param)
         self.info("replacing current model with updated one")
         self._waitingForAModel = False
+        print('self._waitingForAModel = False within learner --> setModel()')
         if "setReference" in flags and flags["setReference"] == True:
             self._referenceModel = param
         # self.info('ENDTIME_setModel: '+str(time.time()))
@@ -379,6 +380,7 @@ class BatchLearner(Learner):
         self._parametersRequested = False
         self._waitingForAModel = False
         self._batchTrainingCompleted = False
+        # self._batchTrainingCompleted = True  # Modified code
         self._trainingBatch = []
         self._seenExamples = 0
 
@@ -392,11 +394,15 @@ class BatchLearner(Learner):
         boolean value, defining allowance to accept training data
 
         '''
+
         if self._batchTrainingCompleted and not self._waitingForAModel:  # as soon as the stopping criterion is met and the aggregate model is set, the learner is stopped
+        # if self._batchTrainingCompleted:  # as soon as the stopping criterion is met and the aggregate model is set, the learner is stopped
             self.stopExecution()
         # TODO the below returns false even after data examples are beyond the stopping criteria
         #  Check if the coordinator answers to the
+
         return self._isInitialized and not self._isTraining and not self._batchTrainingCompleted and not self._waitingForAModel
+        # return self._isInitialized and not self._isTraining and not self._batchTrainingCompleted
 
     def obtainData(self, example: tuple):
         '''

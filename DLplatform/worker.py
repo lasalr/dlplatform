@@ -235,8 +235,10 @@ class Worker(baseClass):
         '''
 
         self.info('Got message in the worker queue')
-
+        print('onCommunicatorMessageReceived() is being called')
+        print('routing_key =', routing_key)
         if 'newModel' in routing_key:
+            print('newModel is in routing_key')
             body_size = sys.getsizeof(body)
             self._communicator.learningLogger.logSendModelMessage(exchange, routing_key, body_size, 'receive',
                                                                   self.getIdentifier())
@@ -244,6 +246,7 @@ class Worker(baseClass):
             message = pickle.loads(body)
             param = message['param']
             flags = message['flags']
+            print('setModel() is about to be called')
             self._learner.setModel(param, flags)
         if 'request' in routing_key:
             body_size = 0
@@ -266,7 +269,7 @@ class Worker(baseClass):
         ValueError
             in case that the received message doesn't fit with the expected type
         '''
-
+        # print('checkInterProcessCommunication is being called')
         if not self._communicatorMsgQueue.empty():
             # message from communicator is not pickled, since it is already simple
             # objects, that can be passed through external means of messaging
@@ -333,10 +336,6 @@ class Worker(baseClass):
             case that the connection from dataScheduler or to the communicator aren't set.
         '''
 
-        if MEM_TRACE:
-            # Store frames
-            tracemalloc.start(1000)
-
         if self._dataScheduler is None:
             self.error("DataScheduler not set!")
             raise AttributeError("DataScheduler not set!")
@@ -364,25 +363,7 @@ class Worker(baseClass):
 
         self._setConnectionsToComponents()
 
-        if MEM_TRACE:
-            snapshot = tracemalloc.take_snapshot()
-            top_stats = snapshot.statistics('lineno')
-            print("Process ID:", str(os.getpid()), "[ Top 10 ] in run() in Worker between "
-                                                   "self._setConnectionsToComponents() and "
-                                                   "self._dataScheduler.start()")
-            for stat in top_stats[:10]:
-                print(stat)
-
         self._dataScheduler.start()
-
-        if MEM_TRACE:
-            snapshot = tracemalloc.take_snapshot()
-            top_stats = snapshot.statistics('lineno')
-            print("Process ID:", str(os.getpid()), "[ Top 10 ] in run() in Worker between "
-                                                   "self._dataScheduler.start() and self._communicator.start()")
-            for stat in top_stats[:10]:
-                print(stat)
-
         self._communicator.start()
 
         if (self._communicatorMsgQueue == None) or (self._dataSchedulerRetriever == None):
@@ -390,54 +371,22 @@ class Worker(baseClass):
                                  "the worker!")
 
         # initializing of consumer of the communicator takes time...
-        time.sleep(5)
+        time.sleep(5)  # Original code
+        # time.sleep(30)  # To try out
         # only now we should request for initial model - or we will not be able to receive the answer
         self._learner.requestInitialModel()
 
-        if MEM_TRACE:
-            tracemalloc.start(100)
-            trace_start_time = datetime.datetime.now()
         # TODO check what happens in this loop once sys.exit() is run in learner.py.
-        #  Does the whole loop end and processes all die?
+        #  Does the whole loop end and  processes all die?
         while not self._learner._stop:
-            if MEM_TRACE:
-                if datetime.datetime.now() - trace_start_time > datetime.timedelta(seconds=10):
-                    snapshot = tracemalloc.take_snapshot()
-                    top_stats = snapshot.statistics('lineno')
-                    print("Process ID:", str(os.getpid()), "[ Top 10 ] in while-true in run() in Worker before "
-                                                           "self._dataScheduler.join()")
-                    for stat in top_stats[:10]:
-                        print(stat)
-                    trace_start_time = datetime.datetime.now()
-
             self.checkInterProcessCommunication()
-            print(len(self._dataBuffer))
-            print(self._learner.canObtainData())
             if len(self._dataBuffer) > 0:
                 if self._learner.canObtainData():
                     self._learner.obtainData(self._dataBuffer[0])
-                    del (self._dataBuffer[0])
+                    del(self._dataBuffer[0])
 
         self._dataScheduler.terminate()
         self._dataScheduler.join()
-
-        if MEM_TRACE:
-            snapshot = tracemalloc.take_snapshot()
-            top_stats = snapshot.statistics('lineno')
-            print("Process ID:", str(os.getpid()), "[ Top 10 ] in run() in Worker between "
-                                                   "self._dataScheduler.join() and self._communicator.join()")
-            for stat in top_stats[:10]:
-                print(stat)
-
         self._communicator.terminate()
         self._communicator.join()
-        print('worker ',self._identifier,' shut down.')
-
-        if MEM_TRACE:
-            snapshot = tracemalloc.take_snapshot()
-            top_stats = snapshot.statistics('lineno')
-            print("Process ID:", str(os.getpid()), "[ Top 10 ] in run() in Worker after self._communicator.join()")
-            for stat in top_stats[:10]:
-                print(stat)
-
-        print('worker', self._identifier, 'shut down.')
+        print('worker ', self._identifier, ' shut down.')

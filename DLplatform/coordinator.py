@@ -317,6 +317,8 @@ class Coordinator(baseClass):
 
         while True:
             self.checkInterProcessCommunication()
+            if len(set(self._activeNodes)) >= 21:
+                print('There are {} active nodes running. They are: {}'.format(len(set(self._activeNodes)), set(self._activeNodes)))
             # since the deregistration may happen during the balancing evaluation, we have to check if there are not active nodes
             nonActiveBalancingSet = set(self._balancingSet.keys()).difference(set(self._activeNodes))
             for nodeId in nonActiveBalancingSet:
@@ -324,15 +326,19 @@ class Coordinator(baseClass):
             # we have to enter this in two cases:
             # - we got a violation
             # - we got all the balancing models
+            print('len(self._violations) =', len(self._violations))
+            print('len(self._balancingSet.keys()) =', len(self._balancingSet.keys()))
+            print('not None in set(self._balancingSet.values()) =', not None in set(self._balancingSet.values()))
             if len(self._violations) > 0 or (len(self._balancingSet.keys()) != 0 and not None in set(self._balancingSet.values())):
+                print('Inside code which leads to self._synchronizer.evaluate!')
                 if len(self._violations) > 0:
                     message = loads(self._violations[0])
                     nodeId = message['id']
                     param = message['param']
                     self._nodesInViolation.append(nodeId)
                     self._balancingSet[nodeId] = param
-                    print('type(param) =', type(param))
-                    print('param =', param)
+                    # print('type(param) =', type(param))
+                    # print('param =', param)
                     # @NOTE always deleting the current violation leads to potential extension of a dynamic small
                     # balancing to a full_sync - might be a case that blocking everything, balancing one violation
                     # and then considering the next one is a better idea from the point of view of effectiveness
@@ -343,8 +349,9 @@ class Coordinator(baseClass):
                 # print('type(self._balancingSet).values() =', type(self._balancingSet.values()))
                 # print('self._balancingSet.values() =', self._balancingSet.values())
                 nodes, params, flags = self._synchronizer.evaluate(self._balancingSet, self._activeNodes)
-                print('nodes in coordinator from ._synchronizer.evaluate()', nodes)
-                print('params in coordinator from ._synchronizer.evaluate()', params)
+                # print('nodes in coordinator from ._synchronizer.evaluate()', nodes)
+                # print('params in coordinator from ._synchronizer.evaluate()', params)
+                # print('flags in coordinator from ._synchronizer.evaluate()', flags)
                 # fill balancing set with None for new nodes in balancing set
                 for newNode in nodes:
                     if not newNode in self._balancingSet.keys() and newNode in self._activeNodes:

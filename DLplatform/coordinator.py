@@ -30,29 +30,29 @@ MEM_TRACE = False
 class InitializationHandler:
     def __call__(self, params : Parameters):
         return params
-    
+
 class UseFirstInitHandler(InitializationHandler):
     def __init__(self):
         self._initParams = None
-    
-    
+
+
     def __call__(self, params : Parameters):
         if self._initParams is None:
             self._initParams = params
         return self._initParams
-    
+
 ## %TODO finish implementation of noisy initialization
 class NoisyInitHandler(InitializationHandler):
     def __init__(self, noiseParams):
         self._noiseParams = noiseParams
         self._initParams = None
-    
+
     def __call__(self, params : Parameters):
         if self._initParams is None:
             self._initParams = params
         eps = self.getNoise()
         return self._initParams.add(eps)
-    
+
     def getNoise(self):
         if self._noiseParams['type'] == "uniform":
             range = self._noiseParams['range']
@@ -63,8 +63,8 @@ class Coordinator(baseClass):
     '''
     Provides the functionality of the central coordinator which handles model
     synchronization and information exchange between workers
-    '''    
-    
+    '''
+
     def __init__(self, minStartNodes = 0, minStopNodes = 0):
         '''
 
@@ -80,7 +80,7 @@ class Coordinator(baseClass):
         '''
 
         super().__init__(name = "Coordinator")
-        
+
         self._communicator              = None
         self._synchronizer              = None
         self._violations                = []
@@ -95,16 +95,6 @@ class Coordinator(baseClass):
         # if this parameter is larger than 0, then when less than this amount of workers is active,
         # process stops - all the other still active workers are asked to exit
         self._minStopNodes              = minStopNodes
-
-        self._communicator = None
-        self._synchronizer = None
-        self._violations = []
-        self._nodesInViolation = []
-        self._balancingSet = {}
-        self._activeNodes = []
-        self._initHandler = InitializationHandler()
-        self._learningLogger = None
-        self._allNodes = []
 
         # initializing queue for communication with communicator process
         self._communicatorConnection = Queue()
@@ -263,8 +253,8 @@ class Coordinator(baseClass):
                 self._waitingNodes.clear()
                 # we want to allow to wait for 10 nodes, but then others to join dynamically
                 self._minStartNodes = 0
-            #TODO: maybe we have to check the balancing set here again. 
-            #If a node registered, while we are doing a full sync, or a balancing operation, 
+            #TODO: maybe we have to check the balancing set here again.
+            #If a node registered, while we are doing a full sync, or a balancing operation,
             #we might need to check. But then, maybe it's all ok like this.
             #will spoil full sync for dynamic case and will spoil periodic case - they will have to wait
             # for this new node to make needed amount of updates

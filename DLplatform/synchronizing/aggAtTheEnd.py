@@ -13,6 +13,7 @@ class AggregationAtTheEnd(Synchronizer):
             raise AttributeError("No aggregator is set")
 
         # this condition is needed to call the 'evaluate' method in a standardized way across the different sync schemes
+        print('set(list(nodesDict.keys())) == set(activeNodes) evaluates to {}'.format(set(list(nodesDict.keys())) == set(activeNodes)))
         if set(list(nodesDict.keys())) == set(activeNodes):
             return activeNodes, self._aggregator(list(nodesDict.values())), {}
         else:

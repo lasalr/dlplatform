@@ -1,6 +1,5 @@
 import datetime
 import os
-import tracemalloc
 
 from DLplatform.baseClass import baseClass
 from DLplatform.parameters import Parameters
@@ -10,9 +9,6 @@ from DLplatform.synchronizing import Synchronizer
 from pickle import loads
 from multiprocessing import Queue
 import sys
-
-MEM_TRACE = False
-
 
 '''
     The InitializationHandler defines, how the coordinator handles model parameters when new learners register. 
@@ -282,9 +278,6 @@ class Coordinator(baseClass):
                 sys.exit()
 
     def run(self):
-        if MEM_TRACE:
-            tracemalloc.start(100)
-            trace_start_time = datetime.datetime.now()
 
         if self._communicator is None:
             self.error("Communicator is not set!")
@@ -361,14 +354,5 @@ class Coordinator(baseClass):
                     self._learningLogger.logAveragedModel(nodes, params, flags)
                     self._balancingSet.clear()
                     self._nodesInViolation = []
-
-            if MEM_TRACE:
-                if datetime.datetime.now() - trace_start_time > datetime.timedelta(seconds=10):
-                    snapshot = tracemalloc.take_snapshot()
-                    top_stats = snapshot.statistics('lineno')
-                    print("Process ID:", str(os.getpid()), "[ Top 10 ] - while-true in run() in Coordinator")
-                    for stat in top_stats[:10]:
-                        print(stat)
-                    trace_start_time = datetime.datetime.now()
 
         self._communicator.join()

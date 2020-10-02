@@ -1,5 +1,4 @@
 import datetime
-import tracemalloc
 import os
 
 from DLplatform.baseClass import baseClass
@@ -12,8 +11,6 @@ import pickle
 from multiprocessing import Pipe, Queue
 from pickle import loads
 import sys
-
-MEM_TRACE = False
 
 
 class Worker(baseClass):

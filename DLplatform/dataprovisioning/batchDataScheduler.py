@@ -1,10 +1,8 @@
 import datetime
 import os
-import tracemalloc
 
 from DLplatform.dataprovisioning import DataScheduler
 
-MEM_TRACE = False
 LOG_ON = True
 
 
@@ -22,10 +20,6 @@ class BatchDataScheduler(DataScheduler):
 
         """
 
-        if MEM_TRACE:
-            tracemalloc.start(100)
-            trace_start_time = datetime.datetime.now()
-
         DataScheduler.generateSamples(self)
 
         if LOG_ON:
@@ -33,17 +27,6 @@ class BatchDataScheduler(DataScheduler):
             loop_iter = 0
             log_file_path = 'C:/Users/lasal/Documents/resProj/Console Logs/batchsize_logs.txt'
             log_start_time = datetime.datetime.now()
-
-
-
-        if MEM_TRACE:
-            if datetime.datetime.now() - trace_start_time > datetime.timedelta(seconds=10):
-                snapshot = tracemalloc.take_snapshot()
-                top_stats = snapshot.statistics('lineno')
-                print("Process ID:", str(os.getpid()), "[ Top 10 ] - while-true in generateSamples() in "
-                                                       "BatchDataScheduler")
-                for stat in top_stats[:10]:
-                    print(stat)
 
         while True:
             data = self.getData()

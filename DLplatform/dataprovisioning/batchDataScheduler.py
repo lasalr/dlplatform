@@ -25,7 +25,7 @@ class BatchDataScheduler(DataScheduler):
         if LOG_ON:
             sent_data_length = 0
             loop_iter = 0
-            log_file_path = 'C:/Users/lasal/Documents/resProj/Console Logs/batchsize_logs.txt'
+            log_file_path = '../../../../../Console Logs/batchsize_logs.txt'
             log_start_time = datetime.datetime.now()
 
         while True:

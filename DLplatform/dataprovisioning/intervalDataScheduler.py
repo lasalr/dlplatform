@@ -39,7 +39,7 @@ class IntervalDataScheduler(DataScheduler):
 
             sent_data_length += len(data)
 
-            log_file_path = 'C:/Users/lasal/Documents/resProj/Console Logs/batchsize_logs.txt'
+            log_file_path = '../../../../../Console Logs/batchsize_logs.txt'
             log_start_time = datetime.datetime.now()
             loop_iter += 1
 

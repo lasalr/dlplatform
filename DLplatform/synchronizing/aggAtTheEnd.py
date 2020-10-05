@@ -14,6 +14,8 @@ class AggregationAtTheEnd(Synchronizer):
 
         # this condition is needed to call the 'evaluate' method in a standardized way across the different sync schemes
         print('set(list(nodesDict.keys())) == set(activeNodes) evaluates to {}'.format(set(list(nodesDict.keys())) == set(activeNodes)))
+        print('set(list(nodesDict.keys())) =', set(list(nodesDict.keys())))
+        print('set(activeNodes) =', set(activeNodes))
         if set(list(nodesDict.keys())) == set(activeNodes):
             return activeNodes, self._aggregator(list(nodesDict.values())), {}
         else:

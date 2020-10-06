@@ -55,6 +55,8 @@ class LinearSVC(BatchLearner):
         loss = clf.fit(X=X, y=y).score(X=X, y=y)
         preds = clf.predict(X)
 
+
+
         return loss, preds
 
     def setParameters(self, param: VectorParameter):

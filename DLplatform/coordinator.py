@@ -299,6 +299,7 @@ class Coordinator(baseClass):
             raise AttributeError("communicatorConnection was not set properly at the worker!")
 
         while True:
+
             self.checkInterProcessCommunication()
 
             # since the deregistration may happen during the balancing evaluation, we have to check if there are not active nodes
@@ -308,16 +309,19 @@ class Coordinator(baseClass):
             # we have to enter this in two cases:
             # - we got a violation
             # - we got all the balancing models
-            if len(set(self._activeNodes)) >= 21 and len(self._violations) > 0:
-                print('There are {} active nodes running. They are: {}'.format(len(set(self._activeNodes)), set(self._activeNodes)))
-                print('len(self._violations) =', len(self._violations))
-                print('len(self._balancingSet.keys()) =', len(self._balancingSet.keys()))
-                print('not None in set(self._balancingSet.values()) =', not None in set(self._balancingSet.values()))
+
+            # if len(set(self._activeNodes)) >= 21 and len(self._violations) > 0:
+                # print('There are {} active nodes running. They are: {}'.format(len(set(self._activeNodes)), set(self._activeNodes)))
+                # print('len(self._violations) =', len(self._violations))
+                # print('len(self._balancingSet.keys()) =', len(self._balancingSet.keys()))
+                # print('not None in set(self._balancingSet.values()) =', not None in set(self._balancingSet.values()))
+
             if len(self._violations) > 0 or (len(self._balancingSet.keys()) != 0 and not None in set(self._balancingSet.values())):
-                print('Inside code which leads to self._synchronizer.evaluate!')
+                # print('Inside code which leads to self._synchronizer.evaluate!')
+
                 if len(self._violations) > 0:
-                    print('Inside code for handling violations!')
-                    message = loads(self._violations[0])
+                    # print('Inside code for handling violations!')
+                    message = loads(self._violations[0])  # dict
                     nodeId = message['id']
                     param = message['param']
                     self._nodesInViolation.append(nodeId)
@@ -333,7 +337,7 @@ class Coordinator(baseClass):
                 # print('self._balancingSet.keys() =', self._balancingSet.keys())
                 # print('type(self._balancingSet).values() =', type(self._balancingSet.values()))
                 # print('self._balancingSet.values() =', self._balancingSet.values())
-                print('Calling synchronizer.evaluate()')
+                # print('Calling synchronizer.evaluate()')
                 nodes, params, flags = self._synchronizer.evaluate(self._balancingSet, self._activeNodes)
                 # print('nodes in coordinator from ._synchronizer.evaluate()', nodes)
                 # print('params in coordinator from ._synchronizer.evaluate()', params)

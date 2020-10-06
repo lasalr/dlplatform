@@ -45,9 +45,9 @@ class RadonPoint(Aggregator):
         """
         print("Running Radon point calculation with:", len(params), "models")
         counter = 0
-        print('type(params) =', type(params))
-        print('type(params[0]) =', type(params[0]))
-        print('type(params[0].get()) =', type(params[0].get()))
+        # print('type(params) =', type(params))
+        # print('type(params[0]) =', type(params[0]))
+        # print('type(params[0].get()) =', type(params[0].get()))
         if len(params[1:]) == 0:
             print('WARNING: Only 1 model processed!')
         for m in params:
@@ -80,14 +80,14 @@ class RadonPoint(Aggregator):
         returns params as nd.array
         """
         arr = params[0].getCopy().get()
-        print('arr (at start) =', arr)
+        # print('arr (at start) =', arr)
         if len(params[1:]) == 0:
             return arr.reshape((1, len(arr)))
         else:
             for p in params[1:]:
-                print('p =', p)
+                # print('p =', p)
                 arr = np.vstack((arr, p.getCopy().get()))
-                print('arr =', arr)
+                # print('arr =', arr)
             return arr
 
     def getRadonPoint(self, S):
@@ -199,8 +199,8 @@ class RadonPoint(Aggregator):
         return S[0]
 
     def getRadonNumber(self, S):
-        print(type(S))
-        print('S.shape:', S.shape)  # e.g. S.shape = [, 19]
+        # print(type(S))
+        # print('S.shape:', S.shape)  # e.g. S.shape = [, 19]
         return S.shape[1] + 2  # for Euclidean space R^d the radon number is R = d + 2
 
     def floatApproxEqual(self, x, y):

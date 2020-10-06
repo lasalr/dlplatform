@@ -246,8 +246,11 @@ class Coordinator(baseClass):
             # in case when parameter is not set, it is equal to 0 - so every new node will satisfy the condition
             if len(self._waitingNodes) >= self._minStartNodes:
                 for worker_id in self._waitingNodes:
-                    self._communicator.sendAggregatedModel(identifiers = [worker_id], param = self._waitingNodes[worker_id], flags = {"setReference":True})
-                    time.sleep(0.1)#without the sleep rabbitMQ gets congested and messages do not get delivered to nodes (occurred with 21 nodes and BatchLearners)
+                    self._communicator.sendAggregatedModel(identifiers=[worker_id], param=self._waitingNodes[worker_id],
+                                                           flags={"setReference": True})
+                    # without the sleep rabbitMQ gets congested and messages do not get delivered to nodes
+                    # (occurred with 21 nodes and BatchLearners)
+                    time.sleep(2)
                 self._waitingNodes.clear()
                 # we want to allow to wait for 10 nodes, but then others to join dynamically
                 self._minStartNodes = 0

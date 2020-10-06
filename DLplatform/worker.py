@@ -232,10 +232,10 @@ class Worker(baseClass):
         '''
 
         self.info('Got message in the worker queue')
-        print('onCommunicatorMessageReceived() is being called')
-        print('routing_key =', routing_key)
+        # print('onCommunicatorMessageReceived() is being called')
+        # print('routing_key =', routing_key)
         if 'newModel' in routing_key:
-            print('newModel is in routing_key')
+            # print('newModel is in routing_key')
             body_size = sys.getsizeof(body)
             self._communicator.learningLogger.logSendModelMessage(exchange, routing_key, body_size, 'receive',
                                                                   self.getIdentifier())
@@ -243,7 +243,7 @@ class Worker(baseClass):
             message = pickle.loads(body)
             param = message['param']
             flags = message['flags']
-            print('setModel() is about to be called')
+            # print('setModel() is about to be called')
             self._learner.setModel(param, flags)
         if 'request' in routing_key:
             body_size = 0
@@ -369,19 +369,22 @@ class Worker(baseClass):
 
         # initializing of consumer of the communicator takes time...
         time.sleep(5)  # Original code
-        # time.sleep(30)  # To try out
         # only now we should request for initial model - or we will not be able to receive the answer
         self._learner.requestInitialModel()
 
         # TODO check what happens in this loop once sys.exit() is run in learner.py.
         #  Does the whole loop end and  processes all die?
         while not self._learner._stop:
+
             self.checkInterProcessCommunication()
             if len(self._dataBuffer) > 0:
                 if self._learner.canObtainData():
                     self._learner.obtainData(self._dataBuffer[0])
                     del(self._dataBuffer[0])
+                else:
+                    time.sleep(5)
 
+        print('Local training complete for node with identifier, self._identifier =', self._identifier)
         self._dataScheduler.terminate()
         self._dataScheduler.join()
         self._communicator.terminate()

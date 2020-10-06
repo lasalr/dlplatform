@@ -14,11 +14,11 @@ class AggregationAtTheEnd(Synchronizer):
 
         # this condition is needed to call the 'evaluate' method in a standardized way across the different sync schemes
         # print('set(list(nodesDict.keys())) == set(activeNodes) evaluates to {}'.format(set(list(nodesDict.keys())) == set(activeNodes)))
-        if len(set(list(nodesDict.keys()))) > 4:
-            print('Number of nodes in nodesDict > 4. Number is len(set(list(nodesDict.keys()))):', len(set(list(nodesDict.keys()))))
-            print(' Nodes are set(list(nodesDict.keys())):', set(list(nodesDict.keys())))
-            print('Active nodes are: set(activeNodes) =', set(activeNodes))
+        # if len(set(list(nodesDict.keys()))) > 4:
+        # print('There are {} nodes in nodesDict.keys(). They are: {}'.format(len(set(list(nodesDict.keys()))), set(list(nodesDict.keys()))))
+        # print('There are {} active nodes. They are: {}'.format(len(set(activeNodes)), set(activeNodes)))
         if set(list(nodesDict.keys())) == set(activeNodes):
+            print('About to return activeNodes, self._aggregator(list(nodesDict.values())), {}')
             return activeNodes, self._aggregator(list(nodesDict.values())), {}
         else:
             return [], None, {}

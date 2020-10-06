@@ -22,21 +22,21 @@ class BatchDataScheduler(DataScheduler):
 
         DataScheduler.generateSamples(self)
 
-        if LOG_ON:
-            sent_data_length = 0
-            loop_iter = 0
-            log_file_path = '../../../../../Console Logs/batchsize_logs.txt'
-            log_start_time = datetime.datetime.now()
+        # if LOG_ON:
+        #     sent_data_length = 0
+        #     loop_iter = 0
+        #     log_file_path = '../../../../../Console Logs/batchsize_logs.txt'
+        #     log_start_time = datetime.datetime.now()
 
         while True:
             data = self.getData()
             self.sendDataUpdate(data)
-            sent_data_length += len(data)
+            # sent_data_length += len(data)
 
-            loop_iter += 1
+            # loop_iter += 1
 
-            if datetime.datetime.now() - log_start_time > datetime.timedelta(seconds=5):
-                with open(log_file_path, 'a') as output:
-                    log_start_time = datetime.datetime.now()
-                    output.write('Process ID: ' + str(os.getpid()) + ' iteration count: ' + str(loop_iter) +
-                                 'Vector length: ' + str(sent_data_length) + '\n')
+            # if datetime.datetime.now() - log_start_time > datetime.timedelta(seconds=5):
+                # with open(log_file_path, 'a') as output:
+                    # log_start_time = datetime.datetime.now()
+                    # output.write('Process ID: ' + str(os.getpid()) + ' iteration count: ' + str(loop_iter) +
+                    #              'Vector length: ' + str(sent_data_length) + '\n')

@@ -1,5 +1,6 @@
 import datetime
 import os
+import time
 
 from DLplatform.baseClass import baseClass
 from DLplatform.parameters import Parameters
@@ -245,6 +246,7 @@ class Coordinator(baseClass):
             # in case when parameter is not set, it is equal to 0 - so every new node will satisfy the condition
             if len(self._waitingNodes) >= self._minStartNodes:
                 for id in self._waitingNodes:
+                    time.sleep(2)  # Added to ensure communicator receives model
                     self._communicator.sendAveragedModel(identifiers = [id], param = self._waitingNodes[id], flags = {"setReference":True})
                 self._waitingNodes.clear()
                 # we want to allow to wait for 10 nodes, but then others to join dynamically

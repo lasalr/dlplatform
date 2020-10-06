@@ -119,7 +119,7 @@ class Learner(baseClass):
         self.setParameters(param)
         self.info("replacing current model with updated one")
         self._waitingForAModel = False
-        print('self._waitingForAModel = False within learner --> setModel()')
+        # print('self._waitingForAModel = False within learner --> setModel()')
         if "setReference" in flags and flags["setReference"] == True:
             self._referenceModel = param
         # self.info('ENDTIME_setModel: '+str(time.time()))
@@ -429,9 +429,11 @@ class BatchLearner(Learner):
         # print('self._stoppingCriterion: =', self._stoppingCriterion)  # Should print 5000
         # print('self._seenExamples =', self._seenExamples)  # Should print the length of the training batch
         # print('self._stoppingCriterion(self._seenExamples, time.time()) =', self._stoppingCriterion(self._seenExamples, time.time()))  # Should print True or False
-        if self._stoppingCriterion(self._seenExamples, time.time()):
-            print('Stopping criterion True')
-            # print(len(self._trainingBatch))
+        # if self._stoppingCriterion(self._seenExamples, time.time()):
+        #     print('Stopping criterion True')
+        #     # print(len(self._trainingBatch))
+        # if self._seenExamples % 100 == 0:
+        #     print('self._identifier =', self._identifier, 'self._seenExamples =', self._seenExamples)
         if not self._stoppingCriterion is None and self._stoppingCriterion(self._seenExamples, time.time()):
             print('Inside code after stopping criterion fulfilled')
             self._parametersRequested = False  # the new parameters after training have not yet been sent
@@ -443,6 +445,7 @@ class BatchLearner(Learner):
             self._learningLogger.logPredictionsLabels(metrics[1], [t[1] for t in self._trainingBatch])
             # batch learners report a violation whenever they finished training.
             # The model is send once, aggregated and redistributed, then the learner stops.
+            print('BatchLearner finished training for node, self._identifier =', self._identifier)
             self.reportViolation()
             self._batchTrainingCompleted = True
             self._isTraining = False

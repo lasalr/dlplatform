@@ -250,7 +250,7 @@ class Coordinator(baseClass):
                                                            flags={"setReference": True})
                     # without the sleep rabbitMQ gets congested and messages do not get delivered to nodes
                     # (occurred with 21 nodes and BatchLearners)
-                    time.sleep(2)
+                    time.sleep(3)
                 self._waitingNodes.clear()
                 # we want to allow to wait for 10 nodes, but then others to join dynamically
                 self._minStartNodes = 0

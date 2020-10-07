@@ -206,3 +206,81 @@ class LogisticRegression(BatchLearner):
 
     def calculateCurrentDivergence(self):
         return np.linalg.norm(self.getParameters().get() - self._flattenReferenceParams)
+
+
+class LinearSVCRandomFF(LinearSVC):
+    
+    def __init__(self, regParam, dim, name="LinearSVCRandomFF"):
+        super(LinearSVCRandomFF, self).__init__(regParam, dim, name)
+
+    def train(self, data: List) -> List:
+        """
+        Training Linear SVC using random fourier features sampler
+
+        Parameters
+        ----------
+        data - training batch
+
+        Returns
+        -------
+        list - first element is loss suffered on this training
+                second element are predictions on the training data
+
+        """
+        if not isinstance(data, List):
+            error_text = "The argument data is not of type" + str(List) + "it is of type " + str(type(data))
+            self.error(error_text)
+            raise ValueError(error_text)
+        print('About to train using LinearSVC with Random Fourier Features sampling')
+        X = np.asarray([record[0] for record in data])
+        y = np.asarray([record[1] for record in data])
+
+        rff_sampler = RBFSampler(gamma=1, random_state=RANDOM_STATE)
+        X_sampled = rff_sampler.fit_transform(X)
+
+        clf = make_pipeline(StandardScaler(), self.model)
+        fitted_model = clf.fit(X_sampled, y)
+        # loss = self.model.fit(X=X, y=y).loss(X=X, y=y)
+        loss = fitted_model.score(X=X_sampled, y=y)
+        preds = clf.predict(X_sampled)
+
+        return [loss, preds]
+
+
+class LinearSVCNystrom(LinearSVC):
+
+    def __init__(self, regParam, dim, name="LinearSVCNystrom"):
+        super(LinearSVCNystrom, self).__init__(regParam, dim, name)
+
+    def train(self, data: List) -> List:
+        """
+        Training Linear SVC using Nystrom sampler
+
+        Parameters
+        ----------
+        data - training batch
+
+        Returns
+        -------
+        list - first element is loss suffered on this training
+                second element are predictions on the training data
+
+        """
+        if not isinstance(data, List):
+            error_text = "The argument data is not of type" + str(List) + "it is of type " + str(type(data))
+            self.error(error_text)
+            raise ValueError(error_text)
+        print('About to train using LinearSVC with Nystrom sampling')
+        X = np.asarray([record[0] for record in data])
+        y = np.asarray([record[1] for record in data])
+
+        nystrom_sampler = Nystroem(gamma=1, random_state=RANDOM_STATE, n_components=int(len(X) * 0.1))
+        X_sampled = nystrom_sampler.fit_transform(X)
+
+        clf = make_pipeline(StandardScaler(), self.model)
+        fitted_model = clf.fit(X_sampled, y)
+        # loss = self.model.fit(X=X, y=y).loss(X=X, y=y)
+        loss = fitted_model.score(X=X_sampled, y=y)
+        preds = clf.predict(X_sampled)
+
+        return [loss, preds]

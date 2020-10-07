@@ -6,7 +6,11 @@ from sklearn.linear_model import LogisticRegression as LR
 from sklearn.svm import LinearSVC as SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
+from sklearn.kernel_approximation import RBFSampler, Nystroem
+from sklearn.kernel_approximation import Nystroem
 
+
+RANDOM_STATE = 123
 
 class LinearSVC(BatchLearner):
 
@@ -14,7 +18,7 @@ class LinearSVC(BatchLearner):
         BatchLearner.__init__(self, name=name)
         self.regParam = regParam
         self.dim = dim
-        self.model = SVC(C=self.regParam, loss='hinge')
+        self.model = SVC(C=self.regParam, loss='hinge', max_iter=2000, random_state=RANDOM_STATE)
         self.model.coef_ = np.zeros(dim - 1)
         self.model.intercept_ = np.array([0.0])
 
@@ -115,7 +119,7 @@ class LogisticRegression(BatchLearner):
         self.regParam = regParam
         self.dim = dim
         self.solver = solver
-        self.model = LR(C=self.regParam, solver=self.solver)
+        self.model = LR(C=self.regParam, solver=self.solver, random_state=RANDOM_STATE)
         self.model.coef_ = np.zeros(dim - 1)
         self.model.intercept_ = np.array([0.0])
         # self.weights = np.zeros(dim)

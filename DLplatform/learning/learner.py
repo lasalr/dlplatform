@@ -438,7 +438,7 @@ class BatchLearner(Learner):
             print('Inside code after stopping criterion fulfilled')
             self._parametersRequested = False  # the new parameters after training have not yet been sent
             self._isTraining = True
-            metrics = self.train(self._trainingBatch)  # train() should return loss, preds
+            metrics = self.train(self._trainingBatch)  # train() should return list(loss, preds)
             # first element of metrics is loss value
             self._learningLogger.logLearnerLoss(metrics[0])
             # second element of metrics is an array with predictions

@@ -9,8 +9,8 @@ from sklearn.pipeline import make_pipeline
 from sklearn.kernel_approximation import RBFSampler, Nystroem
 from sklearn.kernel_approximation import Nystroem
 
-
 RANDOM_STATE = 123
+
 
 class LinearSVC(BatchLearner):
 

@@ -79,33 +79,44 @@ class LinearSVC(BatchLearner):
             in case that param is not of type Parameters
         """
 
-
         if not isinstance(param, VectorParameter):
             error_text = "The argument param is not of type" + str(VectorParameter) + "it is of type " \
                          + str(type(param))
             self.error(error_text)
             raise ValueError(error_text)
-
+        # print('param.shape =', param.get().shape)
         w = param.get().tolist()
+        # print('w =', w)
         b = w[-1]
+        # print('b =', b)
         del w[-1]
+        # print('w =', w)
+
         self.model.coef_ = np.array(w)
         self.model.intercept_ = np.array([b])
+        # print('self.model.coef_ =', self.model.coef_)
+        # print('self.model.intercept_ =', self.model.intercept_)
 
     def getParameters(self) -> VectorParameter:
         """
 
-        Takes the current model parameters and hands them to a KerasNNParameters object which is returned
+        Takes the current model parameters and hands them to a VectorParameter object which is returned
 
         Returns
         -------
         Parameters
 
         """
-        wb = np.concatenate((self.model.coef_.flatten(), self.model.intercept_))
 
-        if isinstance(self.model.intercept_,
-                      List):  # in principle, the intercept can be a lit. But this may break at other points, then.
+        # print('self.model.coef_ =', self.model.coef_)
+        # print('self.model.intercept_ =', self.model.intercept_)
+        # Flattened Coefficients of the support vectors followed by the intercepts
+        wb = np.concatenate((self.model.coef_.flatten(), self.model.intercept_))
+        # print('wb.shape =', wb.shape)
+        # print('wb =', wb)
+        # in principle, the intercept can be a list. But this may break at other points, then.
+        if isinstance(self.model.intercept_, List):
+            print('Intercept is a list')
             wb = np.array(self.model.coef_[0].tolist() + self.model.intercept_.tolist())
         return VectorParameter(wb)
 

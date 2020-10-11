@@ -390,6 +390,8 @@ class RabbitMQComm(Communicator):
             raise ValueError(error_text)
 
         topic = 'newModel.' + '.'.join(identifiers)
+        if len(topic) > 255:  # Truncating to see if this fixes pika.exceptions.ShortStringTooLong
+            topic = topic[:254]
         message = pickle.dumps({'param' : param, 'flags' : flags})
         message_size = sys.getsizeof(message)
         self._publish(self._exchangeNodes, topic, message)

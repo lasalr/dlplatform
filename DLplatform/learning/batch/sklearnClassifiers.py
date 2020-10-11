@@ -207,7 +207,7 @@ class LogisticRegression(BatchLearner):
 
 
 class LinearSVCRandomFF(LinearSVC):
-    
+
     def __init__(self, regParam, dim, name="LinearSVCRandomFF"):
         super(LinearSVCRandomFF, self).__init__(regParam, dim, name)
 

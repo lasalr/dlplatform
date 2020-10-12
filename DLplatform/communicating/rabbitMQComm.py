@@ -5,32 +5,70 @@ from typing import List
 import pika
 import pickle
 import sys
-import threading
+from collections import deque
+from math import ceil
+
+
+def utf8len(s):
+    """
+    Helper function to calculate the number of bytes in a string.
+    """
+    return len(s.encode('utf-8'))
+
+
+def greedy(_ids):
+    # Avail bytes per message
+    _short_string_byte_limit = 255
+    _base_topic = 'newModel.'
+    _avail_bytes = _short_string_byte_limit - utf8len(_base_topic)
+    q = deque(_ids)
+
+    _avail_bytes_msg = _avail_bytes
+    topics = []
+    topic = ''
+    while q:
+        elem = q.popleft()
+        _id_len = utf8len(elem)
+        # Check if message fits in current batch
+        if _id_len + 1 < _avail_bytes_msg:
+            topic += elem + '.'
+        else:
+            topics.append(topic)
+            topic = elem
+            _avail_bytes_msg = _avail_bytes
+        _avail_bytes_msg -= _id_len
+    topics.append(topic)
+
+    # Not nice, but should work..
+    for idx, _t in enumerate(topics):
+        topics[idx] = _t.rstrip('.')
+    return topics
+
 
 class RabbitMQComm(Communicator):
     '''
     Class incapsulating all the methods for sending
     and receiving messages in the distributed system
-    The only connection to the communication server (RabbitMQ) is 
+    The only connection to the communication server (RabbitMQ) is
     hold here.
 
     best practices for RabbitMQ https://www.cloudamqp.com/blog/2017-12-29-part1-rabbitmq-best-practice.html
     main rules:
         - one connection per process, one channel per thread
         - different connections for publishing and consuming
-        - acknowledgements, durable queues and persistent messages in order not to loose messages 
+        - acknowledgements, durable queues and persistent messages in order not to loose messages
             (though it might lead to slower performance)
     '''
 
-    def __init__(self, hostname: str, port: int, user : str, password : str, uniqueId : str, name = "RabbitMQComm"):
+    def __init__(self, hostname: str, port: int, user: str, password: str, uniqueId: str, name="RabbitMQComm"):
         '''
         Initializes the BaseClass with name RabbitMQComm
-        Also sets up parameters needed for connecting to the 
-        communication server. Also initializes the thread that 
+        Also sets up parameters needed for connecting to the
+        communication server. Also initializes the thread that
         later will be used for running a messages queue consuming.
-        In order to follow the best practice two connections are used in 
-        the class - for publishing and for consuming. Since publishing does 
-        not require separate thread the connection is established in the 
+        In order to follow the best practice two connections are used in
+        the class - for publishing and for consuming. Since publishing does
+        not require separate thread the connection is established in the
         initializer and later on is used in all the publishing messages methods.
         Exchanges for nodes and coordinator are hardcoded with names "nodes" and
         "coordinator"

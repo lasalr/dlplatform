@@ -62,7 +62,7 @@ class Coordinator(baseClass):
     synchronization and information exchange between workers
     '''
 
-    def __init__(self, minStartNodes = 0, minStopNodes = 0):
+    def __init__(self, minStartNodes = 0, minStopNodes = 0, sleepTime = 4):
         '''
 
         Initializes a 'Coordinator' object.
@@ -92,6 +92,7 @@ class Coordinator(baseClass):
         # if this parameter is larger than 0, then when less than this amount of workers is active,
         # process stops - all the other still active workers are asked to exit
         self._minStopNodes              = minStopNodes
+        self.sleepTime = sleepTime
 
         # initializing queue for communication with communicator process
         self._communicatorConnection = Queue()

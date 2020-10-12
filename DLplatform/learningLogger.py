@@ -67,16 +67,20 @@ class LearningLogger():
         with open(logFilePath, 'a') as output:
             for i in range(len(predictions)):
                 if isinstance(labels[i], int) and isinstance(predictions[i], int):
+                    # print('if clause in logPredictionsLabels()')
                     output.write('%.3f\t%s\t%s\n' % (time.time(), str(predictions[i]), str(labels[i])))
                 elif isinstance(labels[i], float) and isinstance(predictions[i], float):
+                    # print('elif clause 1 in logPredictionsLabels()')
                     output.write('%.3f\t%s\t%s\n' % (time.time(), str(predictions[i]), str(labels[i])))
                 elif isinstance(labels[i], int) and not isinstance(predictions[i], int) and isinstance(predictions[i], Iterable):
+                    # print('elif clause 2 in logPredictionsLabels()')
                     output.write('%.3f\t%s\t%s\n' % (time.time(), ','.join(list(map(str, predictions[i]))), str(labels[i])))
                 elif isinstance(labels[i], int) and not isinstance(predictions[i], int) and not isinstance(predictions[i], Iterable):
-                    output.write('%.3f\t%s\t%s\n' % (time.time(), ',' + str(predictions[i]), str(labels[i])))
+                    # print('elif clause 3 in logPredictionsLabels()')
+                    output.write('%.3f\t%s\t%s\n' % (time.time(), str(predictions[i]), str(labels[i])))
                 else:
-                    output.write('%.3f\t%s\t%s\n' % (time.time(),
-                        ','.join(map(str, predictions[i])), ','.join(map(str, labels[i]))))
+                    # print('else clause in logPredictionsLabels()')
+                    output.write('%.3f\t%s\t%s\n' % (time.time(), ','.join(map(str, predictions[i])), ','.join(map(str, labels[i]))))
 
     def logViolation(self, localConditionMsg: str, localConditionHolds: bool):
         '''

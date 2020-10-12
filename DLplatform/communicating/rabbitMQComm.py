@@ -390,7 +390,7 @@ class RabbitMQComm(Communicator):
             raise ValueError(error_text)
 
         topic = 'newModel.' + '.'.join(identifiers)
-        
+
         message = pickle.dumps({'param' : param, 'flags' : flags})
         message_size = sys.getsizeof(message)
         self._publish(self._exchangeNodes, topic, message)

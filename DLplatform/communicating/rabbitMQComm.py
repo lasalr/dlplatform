@@ -80,18 +80,18 @@ class RabbitMQComm(Communicator):
         user and password to connect to RabbitMQ on the host
         '''
 
-        Communicator.__init__(self, name = name)
+        Communicator.__init__(self, name=name)
 
-        self._port                      = port # 5672 is default
-        self._hostname                  = hostname # 'localhost' as the simplest
-        self._user                      = user
-        self._password                  = password
+        self._port = port  # 5672 is default
+        self._hostname = hostname  # 'localhost' as the simplest
+        self._user = user
+        self._password = password
         # we use uniqueId in order to allow running several experiments on one and the same
         # rabbitMQ instance - the messages would not be mixed up then, because channels
         # have this uniqueId, that is the PID of the experiment process
-        self._exchangeCoordinator       = 'coordinator' + uniqueId
-        self._exchangeNodes             = 'nodes' + uniqueId
-        self._threads                   = []
+        self._exchangeCoordinator = 'coordinator' + uniqueId
+        self._exchangeNodes = 'nodes' + uniqueId
+        self._threads = []
         self._setupPublishConnection()
 
     '''
@@ -113,14 +113,14 @@ class RabbitMQComm(Communicator):
         if '_publishConnection' in d and d['_publishConnection'] == "reconnect_required":
             credentials = pika.PlainCredentials(d['_user'], d['_password'])
             d['_publishConnection'] = pika.BlockingConnection(pika.ConnectionParameters(host=d['_hostname'],
-                                        port=d['_port'], credentials=credentials, blocked_connection_timeout=None,
-                                        socket_timeout=None, heartbeat=0))
+                                                                                        port=d['_port'], credentials=credentials, blocked_connection_timeout=None,
+                                                                                        socket_timeout=None, heartbeat=0))
             d['_publishChannel'] = d['_publishConnection'].channel()
             d['_publishChannel'].exchange_declare(exchange=d['_exchangeCoordinator'], exchange_type='topic')
             d['_publishChannel'].exchange_declare(exchange=d['_exchangeNodes'], exchange_type='topic')
         self.__dict__.update(d)
 
-    def initiate(self, exchange : str, topics : List[str]):
+    def initiate(self, exchange: str, topics: List[str]):
         '''
         Sets the needed exchange name and topics to listen to.
         For worker it is Nodes exchange and topics with its id
@@ -145,9 +145,9 @@ class RabbitMQComm(Communicator):
         '''
 
         credentials = pika.PlainCredentials(self._user, self._password)
-        return pika.BlockingConnection(pika.ConnectionParameters(host = self._hostname,
-                    port = self._port, credentials = credentials, blocked_connection_timeout = None,
-                    socket_timeout = None, heartbeat = 0))
+        return pika.BlockingConnection(pika.ConnectionParameters(host=self._hostname,
+                                                                 port=self._port, credentials=credentials, blocked_connection_timeout=None,
+                                                                 socket_timeout=None, heartbeat=0))
 
     def _setupPublishConnection(self):
         '''
@@ -155,8 +155,8 @@ class RabbitMQComm(Communicator):
         Declares to exchanges: for Nodes and Coordinator, each instance of communicator
         will know, which of the exchanges should be used for publishing
         '''
-        self._publishConnection         = self.connect()
-        self._publishChannel            = self._publishConnection.channel()
+        self._publishConnection = self.connect()
+        self._publishChannel = self._publishConnection.channel()
 
         self._publishChannel.exchange_declare(exchange=self._exchangeCoordinator, exchange_type='topic')
         self._publishChannel.exchange_declare(exchange=self._exchangeNodes, exchange_type='topic')
@@ -195,11 +195,11 @@ class RabbitMQComm(Communicator):
             self._setupPublishConnection()
             self._publishChannel.basic_publish(exchange=exchange, routing_key=topic, body=message)
 
-    def sendViolation(self, identifier : str, param : Parameters):
+    def sendViolation(self, identifier: str, param: Parameters):
         '''
         Publish message about violation
         Called from a worker with violation and published to coordinator
-        exchange with topic violation. Message is pickled dictionary of 
+        exchange with topic violation. Message is pickled dictionary of
         the form {'id': identifier, 'param': param}
 
         Parameters
@@ -227,19 +227,19 @@ class RabbitMQComm(Communicator):
             self.error(error_text)
             raise ValueError(error_text)
 
-        message = pickle.dumps({'id' : identifier, 'param' : param})
+        message = pickle.dumps({'id': identifier, 'param': param})
         message_size = sys.getsizeof(message)
         topic = 'violation'
         self._publish(self._exchangeCoordinator, topic, message)
         self.info("Sent violation message to coordinator")
         self.learningLogger.logViolationMessage(self._exchangeCoordinator, topic, identifier, message_size, 'send')
 
-    def sendRegistration(self, identifier : str, param : Parameters):
+    def sendRegistration(self, identifier: str, param: Parameters):
         '''
         Publish message that will register a new node on coordinator
         Called from a newly connected worker and published to coordinator
-        exchange with topic registration. Message is pickled dictionary of 
-        the form {'id': identifier}. Supposed to be answered from coordinator 
+        exchange with topic registration. Message is pickled dictionary of
+        the form {'id': identifier}. Supposed to be answered from coordinator
         with a message containng current averaged model.
 
         Parameters
@@ -261,12 +261,12 @@ class RabbitMQComm(Communicator):
             raise ValueError(error_text)
 
         topic = 'registration'
-        message = pickle.dumps({'id' : identifier, 'param' : param})
+        message = pickle.dumps({'id': identifier, 'param': param})
         message_size = sys.getsizeof(message)
         self._publish(self._exchangeCoordinator, topic, message)
         self.learningLogger.logRegistrationMessage(self._exchangeCoordinator, topic, identifier, message_size, 'send')
 
-    def sendDeregistration(self, identifier : str, param : Parameters):
+    def sendDeregistration(self, identifier: str, param: Parameters):
         '''
         When a node finished according to the stopping criterion,
         it send the deregistration message to coordinator
@@ -282,17 +282,17 @@ class RabbitMQComm(Communicator):
             raise ValueError(error_text)
 
         topic = 'deregistration'
-        message = pickle.dumps({'id' : identifier, 'param' : param})
+        message = pickle.dumps({'id': identifier, 'param': param})
         message_size = sys.getsizeof(message)
         self._publish(self._exchangeCoordinator, topic, message)
         self.learningLogger.logRegistrationMessage(self._exchangeCoordinator, topic, identifier, message_size, 'send')
 
-    def sendParameters(self, identifier : str, param : Parameters):
+    def sendParameters(self, identifier: str, param: Parameters):
         '''
         Publish message with parametres
         Called from a worker that was requested for its parameters
         while balancing process and published to coordinator
-        exchange with topic balancing. Message is pickled dictionary of 
+        exchange with topic balancing. Message is pickled dictionary of
         the form {'id': identifier, 'param': param}
 
         Parameters
@@ -321,12 +321,12 @@ class RabbitMQComm(Communicator):
             raise ValueError(error_text)
 
         topic = 'balancing'
-        message = pickle.dumps({'id' : identifier, 'param' : param})
+        message = pickle.dumps({'id': identifier, 'param': param})
         message_size = sys.getsizeof(message)
         self._publish(self._exchangeCoordinator, topic, message)
         self.learningLogger.logBalancingMessage(self._exchangeCoordinator, topic, identifier, message_size, 'send')
 
-    def sendBalancingRequest(self, identifier : str):
+    def sendBalancingRequest(self, identifier: str):
         '''
         Publish message to query the worker for its current parameters
         Called from coordinator while balancing process and published to nodes

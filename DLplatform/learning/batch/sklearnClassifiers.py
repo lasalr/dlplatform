@@ -219,7 +219,9 @@ class LogisticRegression(BatchLearner):
 
 class LinearSVCRandomFF(LinearSVC):
 
-    def __init__(self, regParam, dim, name="LinearSVCRandomFF"):
+    def __init__(self, regParam, dim, gamma=1, n_components=100, name="LinearSVCRandomFF"):
+        self.gamma = gamma
+        self.n_components = n_components
         super(LinearSVCRandomFF, self).__init__(regParam, dim, name)
 
     def train(self, data: List) -> List:
@@ -244,7 +246,7 @@ class LinearSVCRandomFF(LinearSVC):
         X = np.asarray([record[0] for record in data])
         y = np.asarray([record[1] for record in data])
 
-        rff_sampler = RBFSampler(gamma=1, random_state=RANDOM_STATE)
+        rff_sampler = RBFSampler(gamma=self.gamma, n_components=self.n_components, random_state=RANDOM_STATE)
         X_sampled = rff_sampler.fit_transform(X)
 
         clf = make_pipeline(StandardScaler(), self.model)

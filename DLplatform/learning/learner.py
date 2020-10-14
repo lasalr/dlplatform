@@ -483,3 +483,8 @@ class BatchLearner(Learner):
         if self._batchTrainingCompleted and not self._waitingForAModel:
         # if self._batchTrainingCompleted:
             self.stopExecution()
+
+
+class RFFBatchLearner(BatchLearner):
+    def __init__(self):
+        super(RFFBatchLearner, self).__init__()

@@ -55,10 +55,10 @@ class RadonPoint(Aggregator):
             counter += 1
         arr = self.get_array(params)
         print('arr.shape = ', arr.shape)
-        final_parameters = VectorParameter(
-            self.getRadonPointHierarchical(S=self.get_array(params),
-                                           h=math.floor(math.log(len(params),
-                                                                 self.getRadonNumber(arr)))))
+        R = self.getRadonNumber(arr)
+        h = math.floor(math.log(len(params), R))
+        print('Calculating Radon point with Radon number={} and h={}'.format(R, h))
+        final_parameters = VectorParameter(self.getRadonPointHierarchical(S=self.get_array(params), h=h))
         print("Final parameters:", final_parameters.get())
         return final_parameters
         # return self.getRadonPointHierarchical(params, self.get_dim(params))

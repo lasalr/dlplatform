@@ -248,7 +248,7 @@ class LinearSVCRandomFF(LinearSVC):
 
         rff_sampler = RBFSampler(gamma=self.gamma, n_components=self.n_components, random_state=RANDOM_STATE)
         X_sampled = rff_sampler.fit_transform(X)
-
+        # TODO it may not be correct to scale after RFF is applied
         clf = make_pipeline(StandardScaler(), self.model)
         fitted_model = clf.fit(X_sampled, y)
         # loss = self.model.fit(X=X, y=y).loss(X=X, y=y)

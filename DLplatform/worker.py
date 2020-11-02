@@ -1,5 +1,6 @@
 import datetime
 import os
+import random
 
 from DLplatform.baseClass import baseClass
 from DLplatform.learning.learner import Learner
@@ -17,6 +18,7 @@ class Worker(baseClass):
     '''
 
     '''
+    _workerCount = 0
 
     def __init__(self, identifier: str):
         '''
@@ -48,6 +50,7 @@ class Worker(baseClass):
         self._dataSchedulerPipe = Pipe(duplex=False)
         # for retrieval at the worker
         self._dataSchedulerRetriever = self._dataSchedulerPipe[0]
+        self._workerCount += 1
 
     def setIdentifier(self, identifier: str):
         '''
@@ -368,7 +371,8 @@ class Worker(baseClass):
                                  "the worker!")
 
         # initializing of consumer of the communicator takes time...
-        time.sleep(5)  # Original code
+        print('Worker {} is sleeping to allow time for communicator to start...'.format(self._identifier))
+        time.sleep(5)
         # only now we should request for initial model - or we will not be able to receive the answer
         self._learner.requestInitialModel()
 
@@ -381,8 +385,9 @@ class Worker(baseClass):
                 if self._learner.canObtainData():
                     self._learner.obtainData(self._dataBuffer[0])
                     del(self._dataBuffer[0])
-                # else:
-                    # time.sleep(5) # TODO see if this is required
+                else:
+                    # Sleep worker for a bit since len(self._dataBuffer) <= 0'.format(self._identifier))
+                    time.sleep(self._workerCount/10)  # TODO see if this is required
 
         print('Local training complete for node with identifier, self._identifier =', self._identifier)
         self._dataScheduler.terminate()

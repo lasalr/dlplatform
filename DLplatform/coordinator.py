@@ -308,7 +308,8 @@ class Coordinator(baseClass):
 
             self.checkInterProcessCommunication()
 
-            # since the deregistration may happen during the balancing evaluation, we have to check if there are not active nodes
+            # since the deregistration may happen during the balancing evaluation, we have to check if there are not
+            # active nodes
             nonActiveBalancingSet = set(self._balancingSet.keys()).difference(set(self._activeNodes))
             for nodeId in nonActiveBalancingSet:
                 self._balancingSet.pop(nodeId)
@@ -367,5 +368,12 @@ class Coordinator(baseClass):
                     self._learningLogger.logAveragedModel(nodes, params, flags)
                     self._balancingSet.clear()
                     self._nodesInViolation = []
+            else:
+                # print('sleeping within Coordinator.run() after len(self._violations) > 0 or (len('
+                #       'self._balancingSet.keys()) != 0 and not None in set(self._balancingSet.values()))')
+                if len(self._activeNodes) <= 0:
+                    time.sleep(20)
+                else:
+                    time.sleep(len(self._activeNodes))  # To see if this works
 
         self._communicator.join()

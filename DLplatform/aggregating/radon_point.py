@@ -51,7 +51,8 @@ class RadonPoint(Aggregator):
         if len(params[1:]) == 0:
             print('WARNING: Only 1 model processed!')
         for m in params:
-            print("model:", counter, "-", m.get())
+            # print("model:", counter, "-", m.get())
+            print("size of model {} is {}".format(counter, len(m)))
             counter += 1
         arr = self.get_array(params)
         print('arr.shape = ', arr.shape)

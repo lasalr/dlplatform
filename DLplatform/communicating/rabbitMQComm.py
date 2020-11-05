@@ -1,3 +1,5 @@
+import time
+
 from DLplatform.parameters import Parameters
 from DLplatform.communicating import Communicator
 
@@ -569,6 +571,8 @@ class RabbitMQComm(Communicator):
 
         channel = self._setupConsumeConnection()
         try:
+            # print('Sleeping RabbitMQ for {}s'.format(0.5))
+            # time.sleep(0.5)
             channel.start_consuming()
         except pika.exceptions.ConnectionClosed:
             # should actually never happen if everything is working smoothly

@@ -368,12 +368,12 @@ class Coordinator(baseClass):
                     self._learningLogger.logAveragedModel(nodes, params, flags)
                     self._balancingSet.clear()
                     self._nodesInViolation = []
-            else:
-                # print('sleeping within Coordinator.run() after len(self._violations) > 0 or (len('
-                #       'self._balancingSet.keys()) != 0 and not None in set(self._balancingSet.values()))')
-                if len(self._activeNodes) <= 0:
-                    time.sleep(20)
-                else:
-                    time.sleep(len(self._activeNodes))  # To see if this works
+            # else:
+            #     # print('sleeping within Coordinator.run() after len(self._violations) > 0 or (len('
+            #     #       'self._balancingSet.keys()) != 0 and not None in set(self._balancingSet.values()))')
+            #     if len(self._activeNodes) <= 0:
+            #         time.sleep(20)
+            #     else:
+            #         time.sleep(len(self._activeNodes))  # To see if this works
 
         self._communicator.join()

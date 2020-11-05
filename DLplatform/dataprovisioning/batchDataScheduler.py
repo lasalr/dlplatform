@@ -7,8 +7,9 @@ LOG_ON = True
 
 
 class BatchDataScheduler(DataScheduler):
-    def __init__(self, name="BatchDataScheduler"):
+    def __init__(self, maxAmount, name="BatchDataScheduler"):
         DataScheduler.__init__(self, name=name)
+        self.maxAmount = maxAmount
 
     def generateSamples(self):
         """
@@ -27,10 +28,12 @@ class BatchDataScheduler(DataScheduler):
         #     loop_iter = 0
         #     log_file_path = '../../../../../Console Logs/batchsize_logs.txt'
         #     log_start_time = datetime.datetime.now()
+        count = 0
+        while count <= self.maxAmount:
 
-        while True:
             data = self.getData()
             self.sendDataUpdate(data)
+            count += 1
             # sent_data_length += len(data)
 
             # loop_iter += 1

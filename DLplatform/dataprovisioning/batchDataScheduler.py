@@ -28,15 +28,18 @@ class BatchDataScheduler(DataScheduler):
         #     loop_iter = 0
         #     log_file_path = '../../../../../Console Logs/batchsize_logs.txt'
         #     log_start_time = datetime.datetime.now()
+        print('Starting to get data and sending to workers with maxAmount={} for PID={}'.format(self.maxAmount, self.pid))
+
+        # while True:
+        #     data = self.getData()
+        #     self.sendDataUpdate(data)
+
         count = 0
         while count <= self.maxAmount:
-
             data = self.getData()
             self.sendDataUpdate(data)
             count += 1
-            # sent_data_length += len(data)
-
-            # loop_iter += 1
+        print('Finished sending data to workers from PID={}'.format(self.pid))
 
             # if datetime.datetime.now() - log_start_time > datetime.timedelta(seconds=5):
                 # with open(log_file_path, 'a') as output:

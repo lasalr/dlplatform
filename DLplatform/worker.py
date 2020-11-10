@@ -385,9 +385,9 @@ class Worker(baseClass):
                 if self._learner.canObtainData():
                     self._learner.obtainData(self._dataBuffer[0])
                     del(self._dataBuffer[0])
-                else:
-                    # Sleep worker for a bit since len(self._dataBuffer) <= 0'.format(self._identifier))
-                    time.sleep(self._workerCount/10)  # TODO see if this is required
+                # else:
+                #     # Sleep worker for a bit since len(self._dataBuffer) <= 0'.format(self._identifier))
+                #     time.sleep(self._workerCount/10)  # TODO see if this is required
 
         print('Local training complete for node with identifier, self._identifier =', self._identifier)
         self._dataScheduler.terminate()

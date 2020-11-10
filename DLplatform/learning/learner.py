@@ -1,3 +1,5 @@
+import os
+
 from DLplatform.baseClass import baseClass
 from DLplatform.parameters import Parameters
 from DLplatform.communicating import Communicator
@@ -435,7 +437,7 @@ class BatchLearner(Learner):
         # if self._seenExamples % 100 == 0:
         #     print('self._identifier =', self._identifier, 'self._seenExamples =', self._seenExamples)
         if not self._stoppingCriterion is None and self._stoppingCriterion(self._seenExamples, time.time()):
-            print('Inside code after stopping criterion fulfilled')
+            self.debug('Inside code after stopping criterion fulfilled')
             self._parametersRequested = False  # the new parameters after training have not yet been sent
             self._isTraining = True
             metrics = self.train(self._trainingBatch)  # train() should return list(loss, preds)
@@ -445,7 +447,7 @@ class BatchLearner(Learner):
             self._learningLogger.logPredictionsLabels(metrics[1], [t[1] for t in self._trainingBatch])
             # batch learners report a violation whenever they finished training.
             # The model is send once, aggregated and redistributed, then the learner stops.
-            print('BatchLearner finished training for node, self._identifier =', self._identifier)
+            self.info('BatchLearner finished training for node')
             self.reportViolation()
             self._batchTrainingCompleted = True
             self._isTraining = False
@@ -485,6 +487,6 @@ class BatchLearner(Learner):
             self.stopExecution()
 
 
-class RFFBatchLearner(BatchLearner):
-    def __init__(self):
-        super(RFFBatchLearner, self).__init__()
+# class RFFBatchLearner(BatchLearner):
+#     def __init__(self):
+#         super(RFFBatchLearner, self).__init__()

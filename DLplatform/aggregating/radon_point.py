@@ -1,3 +1,5 @@
+import os
+
 from DLplatform.aggregating import Aggregator
 from DLplatform.parameters import Parameters
 from typing import List
@@ -43,7 +45,7 @@ class RadonPoint(Aggregator):
         A new parameter object that is the Radon point of params.
 
         """
-        print("Running Radon point calculation with:", len(params), "models")
+        print('Running Radon point calculation with {} models with PID={}'.format(len(params), os.getpid()))
         counter = 0
         # print('type(params) =', type(params))
         # print('type(params[0]) =', type(params[0]))
@@ -51,8 +53,8 @@ class RadonPoint(Aggregator):
         if len(params[1:]) == 0:
             print('WARNING: Only 1 model processed!')
         for m in params:
-            # print("model:", counter, "-", m.get())
-            print("size of model {} is {}".format(counter, len(m)))
+            print("model:", counter, "-", m.get())
+            print("size of model {} is {}".format(counter, len(m.get())))
             counter += 1
         arr = self.get_array(params)
         print('arr.shape = ', arr.shape)

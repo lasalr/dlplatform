@@ -83,7 +83,7 @@ class Coordinator(baseClass):
         self._violations                = []
         self._nodesInViolation          = []
         self._balancingSet              = {}
-        self._activeNodes	            = []
+        self._activeNodes               = []
         self._initHandler               = InitializationHandler()
         self._learningLogger            = None
         # if this parameter is set, then the coordinator will wait till all the nodes are registered
@@ -219,8 +219,11 @@ class Coordinator(baseClass):
         message_size = sys.getsizeof(body)
         if routing_key == 'violation':
             self.info("Coordinator received a violation")
+            # self.debug('routing_key={}\nexchange={}\nbody={}'.format(routing_key, exchange, body))
+
             self._communicator.learningLogger.logViolationMessage(exchange, routing_key, message['id'], message_size,
                                                                   'receive')
+            # print('Appending violation - violation')
             self._violations.append(body)
         if routing_key == 'balancing':
             self.info("Coordinator received a balancing model")
@@ -231,6 +234,7 @@ class Coordinator(baseClass):
             # for a new model to come and will not react to requests anymore
             # so it cannot be that the model answers several times and thus initiates new 
             # balancing when not needed
+            # print('Appending balancing - violation')
             self._violations.append(body)
         if routing_key == 'registration':
             self.info("Coordinator received a registration")
@@ -325,9 +329,12 @@ class Coordinator(baseClass):
 
             if len(self._violations) > 0 or (len(self._balancingSet.keys()) != 0 and not None in set(self._balancingSet.values())):
                 # print('Inside code which leads to self._synchronizer.evaluate!')
+                # print('len(self._violations) > 0 is {}'.format(len(self._violations) > 0))
+                # print('len(self._balancingSet.keys()) != 0 is {} and not None in set(self._balancingSet.values()) is {}'.
+                #       format(len(self._balancingSet.keys()) != 0, not None in set(self._balancingSet.values())))
 
                 if len(self._violations) > 0:
-                    # print('Inside code for handling violations!')
+                    self.debug('Inside code for handling violations!')
                     message = loads(self._violations[0])  # dict
                     nodeId = message['id']
                     param = message['param']
@@ -344,7 +351,7 @@ class Coordinator(baseClass):
                 # print('self._balancingSet.keys() =', self._balancingSet.keys())
                 # print('type(self._balancingSet).values() =', type(self._balancingSet.values()))
                 # print('self._balancingSet.values() =', self._balancingSet.values())
-                # print('Calling synchronizer.evaluate()')
+                self.info('Calling synchronizer.evaluate()')
                 nodes, params, flags = self._synchronizer.evaluate(self._balancingSet, self._activeNodes)
                 # print('nodes in coordinator from ._synchronizer.evaluate()', nodes)
                 # print('params in coordinator from ._synchronizer.evaluate()', params)
@@ -363,7 +370,9 @@ class Coordinator(baseClass):
                 elif not params is None:
                     # we do not want to update the nodes that are already inactive
                     nodesToSendAvg = list(set(nodes) & set(self._activeNodes))
+                    self.debug('Sending aggregated model')
                     self._communicator.sendAggregatedModel(nodesToSendAvg, params, flags)
+                    self.debug('Finished sending aggregated model')
                     self._learningLogger.logBalancing(flags, self._nodesInViolation, list(self._balancingSet.keys()))
                     self._learningLogger.logAveragedModel(nodes, params, flags)
                     self._balancingSet.clear()
@@ -375,5 +384,5 @@ class Coordinator(baseClass):
             #         time.sleep(20)
             #     else:
             #         time.sleep(len(self._activeNodes))  # To see if this works
-
+        self.debug('About to terminate communicator')
         self._communicator.join()

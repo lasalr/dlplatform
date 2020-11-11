@@ -258,7 +258,7 @@ class Coordinator(baseClass):
                     time.sleep(self.sleepTime)
                 self._waitingNodes.clear()
                 # we want to allow to wait for 10 nodes, but then others to join dynamically
-                self._minStartNodes = 0
+                self._minStartNodes = 1
             #TODO: maybe we have to check the balancing set here again.
             #If a node registered, while we are doing a full sync, or a balancing operation,
             #we might need to check. But then, maybe it's all ok like this.

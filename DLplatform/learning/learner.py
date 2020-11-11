@@ -30,9 +30,6 @@ class Learner(baseClass):
         self._synchronizer = None
         self._stop = False
 
-    def isAlive(self):
-        return not self._stop
-
     def setIdentifier(self, identifier):
         '''
         Setter for identifier
@@ -85,6 +82,12 @@ class Learner(baseClass):
         self._learningLogger = logger
 
     def stopExecution(self):
+        '''
+        Sends a deregistration message to the coordinator and sets the _stop-flag to true, which signals
+        the worker that the learner has stopped execution and triggers the worker to
+        shut down all processes: itself (including the learner), the datascheduler, and the communicato.
+        '''
+
         if self._communicator is None:
             self.error("No communicator is set")
             raise AttributeError("No communicator is set")
@@ -92,6 +95,16 @@ class Learner(baseClass):
         self.info("Stopping criterion was met, sending suicide note to coordinator")
         self._communicator.sendDeregistration(self._identifier, self.getParameters())
         self._stop = True
+
+    def isAlive(self):
+        '''
+        The function signals to the worker whether the learner is still operating or has stopped execution.
+        Returns
+        -------
+        boolean - true if the learner is running and continues operating, false if stopExecution has been called
+
+        '''
+        return not self._stop
 
     def setModel(self, param: Parameters, flags: dict):
         '''
@@ -389,11 +402,6 @@ class BatchLearner(Learner):
         self._trainingBatch = []
         self._seenExamples = 0
 
-    def isAlive(self):
-        if self._batchTrainingCompleted and not self._waitingForAModel:
-            self.stopExecution()
-        return Learner.isAlive(self)
-
     def canObtainData(self) -> bool:
         '''
         Obtains the state of the learner
@@ -459,6 +467,21 @@ class BatchLearner(Learner):
             self.reportViolation()
             self._batchTrainingCompleted = True
             self._isTraining = False
+
+    def isAlive(self):
+        '''
+        The function signals to the worker whether the learner is still operating or has stopped execution.
+        In addition to checking whether to learner has already called stopExecution, for the BatchLearner the
+        function also checks whether batch training is completed and a model was received.
+        In that case, the stopExecution is called.
+        Returns
+        -------
+        boolean - true if the learner is running and continues operating, false if stopExecution has been called
+
+        '''
+        if self._batchTrainingCompleted and not self._waitingForAModel:  # as soon as the stopping criterion is met and the aggregate model is set, the learner is stopped
+            self.stopExecution()
+        return Learner.isAlive(self)
 
     def train(self, data: List) -> List:
         '''

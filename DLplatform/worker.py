@@ -380,7 +380,6 @@ class Worker(baseClass):
         #  Does the whole loop end and  processes all die?
         # while not self._learner._stop:
         while self._learner.isAlive():
-
             self.checkInterProcessCommunication()
             if len(self._dataBuffer) > 0:
                 if self._learner.canObtainData():

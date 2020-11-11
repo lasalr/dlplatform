@@ -18,7 +18,7 @@ class LinearSVC(BatchLearner):
         BatchLearner.__init__(self, name=name)
         self.regParam = regParam
         self.dim = dim
-        self.model = SVC(C=self.regParam, loss='hinge', max_iter=2000, random_state=RANDOM_STATE)
+        self.model = SVC(C=self.regParam, loss='squared_hinge', dual=False, max_iter=2000, random_state=RANDOM_STATE)
         self.model.coef_ = np.zeros(dim - 1)
         self.model.intercept_ = np.array([0.0])
 
@@ -247,13 +247,10 @@ class LinearSVCRandomFF(LinearSVC):
         y = np.asarray([record[1] for record in data])
 
         rff_sampler = RBFSampler(gamma=self.gamma, n_components=self.n_components, random_state=RANDOM_STATE)
-        X_sampled = rff_sampler.fit_transform(X)
-        # TODO it may not be correct to scale after RFF is applied
-        clf = make_pipeline(StandardScaler(), self.model)
-        fitted_model = clf.fit(X_sampled, y)
-        # loss = self.model.fit(X=X, y=y).loss(X=X, y=y)
-        loss = fitted_model.score(X=X_sampled, y=y)
-        preds = clf.predict(X_sampled)
+        svc_rff_model = make_pipeline(rff_sampler, self.model)
+        svc_rff_model.fit(X, y)
+        loss = svc_rff_model.score(X=X, y=y)
+        preds = svc_rff_model.predict(X)
 
         return [loss, preds]
 

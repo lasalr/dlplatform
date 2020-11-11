@@ -30,6 +30,9 @@ class Learner(baseClass):
         self._synchronizer = None
         self._stop = False
 
+    def isAlive(self):
+        return not self._stop
+
     def setIdentifier(self, identifier):
         '''
         Setter for identifier
@@ -385,6 +388,11 @@ class BatchLearner(Learner):
         # self._batchTrainingCompleted = True  # Modified code
         self._trainingBatch = []
         self._seenExamples = 0
+
+    def isAlive(self):
+        if self._batchTrainingCompleted and not self._waitingForAModel:
+            self.stopExecution()
+        return Learner.isAlive(self)
 
     def canObtainData(self) -> bool:
         '''

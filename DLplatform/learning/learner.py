@@ -84,10 +84,9 @@ class Learner(baseClass):
     def stopExecution(self):
         '''
         Sends a deregistration message to the coordinator and sets the _stop-flag to true, which signals
-        the worker that the learner has stopped execution and triggers the worker to
+        the worker that the learner has stopped execution and triggers the worker to 
         shut down all processes: itself (including the learner), the datascheduler, and the communicato.
         '''
-
         if self._communicator is None:
             self.error("No communicator is set")
             raise AttributeError("No communicator is set")

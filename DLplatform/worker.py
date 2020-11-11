@@ -376,9 +376,6 @@ class Worker(baseClass):
         # only now we should request for initial model - or we will not be able to receive the answer
         self._learner.requestInitialModel()
 
-        # TODO check what happens in this loop once sys.exit() is run in learner.py.
-        #  Does the whole loop end and  processes all die?
-        # while not self._learner._stop:
         while self._learner.isAlive():
             self.checkInterProcessCommunication()
             if len(self._dataBuffer) > 0:

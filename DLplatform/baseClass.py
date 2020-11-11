@@ -77,8 +77,8 @@ class baseClass():
         logger.addHandler(ch)
 
         # logger.setLevel(logging.WARNING)
-        logger.setLevel(logging.DEBUG)
-        # logger.setLevel(logging.INFO)
+        # logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.INFO)
         #if debug:
         #    logger.setLevel(logging.DEBUG)
         #else:

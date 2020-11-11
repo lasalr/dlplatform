@@ -351,7 +351,7 @@ class Coordinator(baseClass):
                 # print('self._balancingSet.keys() =', self._balancingSet.keys())
                 # print('type(self._balancingSet).values() =', type(self._balancingSet.values()))
                 # print('self._balancingSet.values() =', self._balancingSet.values())
-                self.info('Calling synchronizer.evaluate()')
+                self.debug('Calling synchronizer.evaluate()')
                 nodes, params, flags = self._synchronizer.evaluate(self._balancingSet, self._activeNodes)
                 # print('nodes in coordinator from ._synchronizer.evaluate()', nodes)
                 # print('params in coordinator from ._synchronizer.evaluate()', params)
@@ -370,6 +370,7 @@ class Coordinator(baseClass):
                 elif not params is None:
                     # we do not want to update the nodes that are already inactive
                     nodesToSendAvg = list(set(nodes) & set(self._activeNodes))
+                    self.debug('nodesToSendAvg={}'.format(nodesToSendAvg))
                     self.debug('Sending aggregated model')
                     self._communicator.sendAggregatedModel(nodesToSendAvg, params, flags)
                     self.debug('Finished sending aggregated model')

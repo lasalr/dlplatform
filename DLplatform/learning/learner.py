@@ -466,6 +466,9 @@ class BatchLearner(Learner):
             self.reportViolation()
             self._batchTrainingCompleted = True
             self._isTraining = False
+            self.info('Logging local model')
+            self._learningLogger.logModel(filename="trained_model_node" + str(self._identifier), params=self.getParameters())
+
 
     def isAlive(self):
         '''

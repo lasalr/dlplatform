@@ -53,13 +53,17 @@ class LinearSVC(BatchLearner):
         X = np.asarray([record[0] for record in data])
         y = np.asarray([record[1] for record in data])
 
-        clf = make_pipeline(StandardScaler(), self.model)
-        clf.fit(X, y)
-        # loss = self.model.fit(X=X, y=y).loss(X=X, y=y)
-        loss = clf.fit(X=X, y=y).score(X=X, y=y)
-        preds = clf.predict(X)
+        self.model.fit(X, y)
+        loss = self.model.score(X=X, y=y)
+        preds = self.model.predict(X)
 
         return [loss, preds]
+
+    def test(self, X_test, y_test) -> tuple:
+        print('About to test using LinearSVC')
+        test_score = self.model.score(X=X_test, y=y_test)
+        preds = self.model.predict(X_test)
+        return (test_score, preds)
 
     def setParameters(self, param: VectorParameter):
         """
@@ -222,7 +226,12 @@ class LinearSVCRandomFF(LinearSVC):
     def __init__(self, regParam, dim, gamma=1, n_components=100, name="LinearSVCRandomFF"):
         self.gamma = gamma
         self.n_components = n_components
+        self.sampler = self.get_sampler()
         super(LinearSVCRandomFF, self).__init__(regParam, dim, name)
+
+    def get_sampler(self):
+        print('sampler created')
+        return RBFSampler(gamma=self.gamma, n_components=self.n_components, random_state=RANDOM_STATE)
 
     def train(self, data: List) -> List:
         """
@@ -246,14 +255,22 @@ class LinearSVCRandomFF(LinearSVC):
         X = np.asarray([record[0] for record in data])
         y = np.asarray([record[1] for record in data])
 
-        rff_sampler = RBFSampler(gamma=self.gamma, n_components=self.n_components, random_state=RANDOM_STATE)
-        svc_rff_model = make_pipeline(rff_sampler, self.model)
-        svc_rff_model.fit(X, y)
-        loss = svc_rff_model.score(X=X, y=y)
-        preds = svc_rff_model.predict(X)
+        # rff_sampler = RBFSampler(gamma=self.gamma, n_components=self.n_components, random_state=RANDOM_STATE)
+        # svc_rff_model = make_pipeline(rff_sampler, self.model)
+
+        X_sampled = self.sampler.fit_transform(X)
+        self.model.fit(X_sampled, y)
+        loss = self.model.score(X=X_sampled, y=y)
+        preds = self.model.predict(X_sampled)
 
         return [loss, preds]
 
+    def test(self, X_test, y_test) -> tuple:
+        print('About to test using LinearSVC')
+        X_test_sampled = self.sampler.fit_transform(X_test)
+        test_score = self.model.score(X=X_test_sampled, y=y_test)
+        preds = self.model.predict(X_test_sampled)
+        return (test_score, preds)
 
 class LinearSVCNystrom(LinearSVC):
 

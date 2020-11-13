@@ -33,7 +33,7 @@ class RadonPoint(Aggregator):
 
     def __call__(self, params: List[Parameters]) -> Parameters:
         """
-        This aggregator takes n lists of model parameters and returns the Radon point (in n dimensions) of the model
+        This aggregator takes n lists of model parameters and returns a Radon point of the model parameters
         parameters.
 
         Parameters
@@ -53,7 +53,7 @@ class RadonPoint(Aggregator):
         if len(params[1:]) == 0:
             print('WARNING: Only 1 model processed!')
         for m in params:
-            print("model:", counter, "-", m.get())
+            # print("model:", counter, "-", m.get())
             print("size of model {} is {}".format(counter, len(m.get())))
             counter += 1
         arr = self.get_array(params)

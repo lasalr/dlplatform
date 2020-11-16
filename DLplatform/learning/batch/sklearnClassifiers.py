@@ -60,7 +60,7 @@ class LinearSVC(BatchLearner):
         return [loss, preds]
 
     def test(self, X_test, y_test) -> tuple:
-        print('About to test using LinearSVC')
+        # print('About to test using LinearSVC')
         test_score = self.model.score(X=X_test, y=y_test)
         preds = self.model.predict(X_test)
         return (test_score, preds)
@@ -266,7 +266,7 @@ class LinearSVCRandomFF(LinearSVC):
         return [loss, preds]
 
     def test(self, X_test, y_test) -> tuple:
-        print('About to test using LinearSVC')
+        # print('About to test using LinearSVCRandomFF')
         X_test_sampled = self.sampler.fit_transform(X_test)
         test_score = self.model.score(X=X_test_sampled, y=y_test)
         preds = self.model.predict(X_test_sampled)

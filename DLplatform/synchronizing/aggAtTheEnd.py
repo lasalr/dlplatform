@@ -38,7 +38,7 @@ class AggregationAtTheEnd(Synchronizer):
             print('nodesDict.values():', nodesDict.values())
             node_vec = node_dict_list[0].get()
             print('node_vec:', node_vec)
-            node_vec = node_vec + np.array([-0.4, 0.3, -0.5])
+            node_vec = node_vec + np.array([-0.5] * 12)
             print('changed node_vec:', node_vec)
             node_dict_list[0].set(weights=node_vec)
             print('node_dict_list[0].get():', node_dict_list[0].get())

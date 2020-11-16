@@ -35,13 +35,13 @@ class AggregationAtTheEnd(Synchronizer):
         # print('There are {} active nodes. They are: {}'.format(len(set(activeNodes)), set(activeNodes)))
         if set(list(nodesDict.keys())) == set(activeNodes):
             node_dict_list = list(nodesDict.values())
-            print('nodesDict.values():', nodesDict.values())
+            # print('nodesDict.values():', nodesDict.values())
             node_vec = node_dict_list[0].get()
-            print('node_vec:', node_vec)
+            # print('node_vec:', node_vec)
             node_vec = node_vec + np.random.rand(12,) * 510
-            print('changed node_vec:', node_vec)
+            # print('changed node_vec:', node_vec)
             node_dict_list[0].set(weights=node_vec)
-            print('node_dict_list[0].get():', node_dict_list[0].get())
+            # print('node_dict_list[0].get():', node_dict_list[0].get())
             print('About to return activeNodes, self._aggregator(list(nodesDict.values())), {}')
             return activeNodes, self._aggregator(node_dict_list), {}
         else:

@@ -100,7 +100,7 @@ class RadonPoint(Aggregator):
         A = np.vstack((A, z))
         b = np.zeros(S.shape[0])
         b[-1] = 1.0
-        alpha = np.linalg.lstsq(A, b)[0]
+        alpha = np.linalg.lstsq(A, b, rcond=None)[0]
         alpha_plus = np.zeros(len(alpha))
         alpha_minus = np.zeros(len(alpha))
         for i in range(len(alpha)):
@@ -133,7 +133,7 @@ class RadonPoint(Aggregator):
         r = d + 2
         h = math.floor(math.log(n, r))
         S = np.array(random.choices(vectors.tolist(), k=r ** h))
-        print(n, d, r, h, r ** h, S.shape)
+        print('n={}, d={}, r={}, h={}, r ** h={}, S.shape={}'.format(n, d, r, h, r ** h, S.shape))
         while S.shape[0] >= r:
             S_new = []
             print(S.shape[0] / r)

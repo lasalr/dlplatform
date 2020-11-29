@@ -16,8 +16,10 @@ class RadonPoint(Aggregator):
     Provides a method to aggregate n models using the Radon point
     """
 
-    EPS = 0.000001
-    MAX_REL_EPS = 0.0001
+    # EPS = 0.000001
+    EPS = 0.0001
+    # MAX_REL_EPS = 0.0001
+    MAX_REL_EPS = 0.01
 
     def __init__(self, name="Radon point"):
         """
